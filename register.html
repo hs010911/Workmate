@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - WorkMate</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">WorkMate</a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">홈</a>
+                <a href="projects.html">프로젝트 찾기</a>
+                <a href="login.html" class="btn-primary">로그인</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container" style="padding: 4rem 1rem;">
+            <div class="form-container" style="max-width: 500px;">
+                <div class="text-center" style="margin-bottom: 2rem;">
+                    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">회원가입</h1>
+                    <p style="color: #6b7280;">새 계정을 만들어 프로젝트에 참여하세요</p>
+                    <!-- Add test mode indicator -->
+                    <div style="background: #fef3c7; color: #92400e; padding: 0.5rem; border-radius: 0.5rem; margin-top: 1rem; font-size: 0.875rem;">
+                        🧪 테스트 모드: 휴대폰 인증 없이 가입 가능
+                    </div>
+                </div>
+
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label" for="username">아이디</label>
+                        <input type="text" id="username" name="username" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="name">이름</label>
+                        <input type="text" id="name" name="name" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="nickname">닉네임</label>
+                        <input type="text" id="nickname" name="nickname" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="phone">휴대폰번호</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="010-1234-5678" required>
+                            <button type="button" id="verifyPhoneBtn" class="btn-secondary" style="white-space: nowrap;">인증</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="verificationGroup" style="display: none;">
+                        <label class="form-label" for="verificationCode">인증번호</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="verificationCode" name="verificationCode" class="form-input" placeholder="6자리 인증번호">
+                            <button type="button" id="confirmCodeBtn" class="btn-secondary">확인</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">비밀번호</label>
+                        <div class="password-input-wrapper">
+                        <input type="password" id="password" name="password" class="form-input" required>
+                            <button type="button" class="password-toggle-btn" id="passwordToggle" aria-label="비밀번호 보기/숨기기">
+                                <svg class="password-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="password-icon password-icon-hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">비밀번호 확인</label>
+                        <div class="password-input-wrapper">
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" required>
+                            <button type="button" class="password-toggle-btn" id="confirmPasswordToggle" aria-label="비밀번호 보기/숨기기">
+                                <svg class="password-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="password-icon password-icon-hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn-primary" style="width: 100%;" id="submitBtn">회원가입</button>
+                    </div>
+
+                    <div class="text-center">
+                        <p style="color: #6b7280;">
+                            이미 계정이 있으신가요? 
+                            <a href="login.html" style="color: #2563eb; text-decoration: none;">로그인</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
+
+

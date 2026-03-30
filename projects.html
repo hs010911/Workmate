@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로젝트 찾기 - WorkMate</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">WorkMate</a>
+            </div>
+            <div class="nav-links">
+                <a href="projects.html" data-nav="projects">프로젝트 찾기</a>
+                <a href="my-projects.html" data-nav="my-projects" data-requires-auth="true">내 프로젝트</a>
+                <a href="profile.html" data-nav="profile" data-requires-auth="true">프로필</a>
+                <a href="dashboard.html" data-nav="dashboard" data-requires-auth="true">대시보드</a>
+                <a href="login.html" class="btn-primary" id="navAuthButton">로그인</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container" style="padding: 2rem 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; font-weight: 700;">프로젝트 찾기</h1>
+                <a href="projects-create.html" class="btn-primary">프로젝트 등록</a>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div style="background: #ffffff; padding: 1.5rem; border-radius: 1rem; border: 1px solid #e5e7eb; margin-bottom: 2rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <input type="text" id="searchTitle" placeholder="프로젝트 제목 검색" class="form-input">
+                    </div>
+                    <div>
+                        <input type="text" id="searchRecruiter" placeholder="모집자 이름 검색" class="form-input">
+                    </div>
+                    <div>
+                        <select id="categoryFilter" class="form-select">
+                            <option value="">모든 카테고리</option>
+                            <option value="web">웹 개발</option>
+                            <option value="mobile">모바일 앱</option>
+                            <option value="ai">AI/ML</option>
+                            <option value="game">게임</option>
+                            <option value="design">디자인</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="statusFilter" class="form-select">
+                            <option value="">모든 상태</option>
+                            <option value="recruiting">모집중</option>
+                            <option value="in-progress">진행중</option>
+                            <option value="completed">완료</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <button id="searchBtn" class="btn-primary">검색</button>
+                    <button id="resetBtn" class="btn-outline">초기화</button>
+                    <div style="margin-left: auto;">
+                        <select id="sortBy" class="form-select">
+                            <option value="latest">최신순</option>
+                            <option value="deadline">마감일순</option>
+                            <option value="popular">인기순</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 모집중 프로젝트 -->
+            <div id="recruitingSection" style="margin-bottom: 3rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">모집중 프로젝트</h2>
+                <div class="projects-grid" id="recruitingProjectsList">
+                    <!-- 동적으로 로드될 프로젝트들 -->
+                </div>
+                <div id="recruitingEmptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📋</div>
+                    <h3>모집중인 프로젝트가 없습니다</h3>
+                    <p>새로운 프로젝트를 기다려주세요</p>
+                </div>
+            </div>
+
+            <!-- 마감된 프로젝트 -->
+            <div id="closedSection" style="margin-bottom: 3rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">마감된 프로젝트</h2>
+                <div class="projects-grid" id="closedProjectsList">
+                <!-- 동적으로 로드될 프로젝트들 -->
+                </div>
+                <div id="closedEmptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📋</div>
+                    <h3>마감된 프로젝트가 없습니다</h3>
+                    <p>모든 프로젝트가 모집중입니다</p>
+                </div>
+            </div>
+
+            <!-- 로딩 상태 -->
+            <div id="loading" style="text-align: center; padding: 2rem; display: none;">
+                <p>프로젝트를 불러오는 중...</p>
+            </div>
+        </div>
+    </main>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/projects.js"></script>
+</body>
+</html>

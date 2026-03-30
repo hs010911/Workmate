@@ -1,0 +1,31 @@
+# 환경 변수 파일 (보안상 중요)
+.env
+
+# Node modules
+node_modules/
+
+# 로그 파일
+*.log
+npm-debug.log*
+
+# 운영체제 파일
+.DS_Store
+Thumbs.db
+
+# IDE 설정
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 기타
+*.pem
+.env.local
+.env.production
+
+
+
+
+
+
+

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로젝트 상세 - WorkMate</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">WorkMate</a>
+            </div>
+            <div class="nav-links">
+                <a href="projects.html" data-nav="projects">프로젝트 찾기</a>
+                <a href="my-projects.html" data-nav="my-projects" data-requires-auth="true">내 프로젝트</a>
+                <a href="profile.html" data-nav="profile" data-requires-auth="true">프로필</a>
+                <a href="dashboard.html" data-nav="dashboard" data-requires-auth="true">대시보드</a>
+                <a href="login.html" class="btn-primary" id="navAuthButton">로그인</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="detail-page">
+        <div class="container detail-container">
+            <a href="projects.html" class="detail-back-link">← 프로젝트 찾기 목록으로</a>
+
+            <!-- 탭 네비게이션 -->
+            <div class="detail-tabs" id="detailTabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e5e7eb;">
+                <button class="detail-tab-btn active" onclick="switchTab('info')" id="tabInfoBtn">프로젝트 정보</button>
+                <button class="detail-tab-btn" onclick="switchTab('tasks')" id="tabTasksBtn" style="display: none;">작업 관리</button>
+            </div>
+
+            <!-- 프로젝트 정보 탭 -->
+            <div id="tabInfo" class="tab-content active">
+            <section class="detail-card" id="projectInfo">
+                <div class="detail-card-head">
+                    <div>
+                        <p class="detail-subtitle">프로젝트 상세</p>
+                        <h1 id="projectTitle">프로젝트 제목</h1>
+                    </div>
+                    <span id="projectStatus" class="project-status status-recruiting">모집중</span>
+                </div>
+
+                <div class="detail-info">
+                    <div class="info-row">
+                        <span class="info-label">프로젝트 설명</span>
+                        <p class="info-value" id="projectDescription">프로젝트 설명이 여기에 표시됩니다.</p>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">카테고리</span>
+                        <p class="info-value" id="projectCategory">-</p>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">작성자</span>
+                        <p class="info-value" id="projectRecruiter">-</p>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">지원 인원 수</span>
+                        <p class="info-value" id="projectParticipants">-</p>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">마감일</span>
+                        <p class="info-value" id="projectDeadline">-</p>
+                    </div>
+                </div>
+
+                <div id="projectActions" class="detail-actions">
+                    <!-- 동적으로 버튼이 추가됨 -->
+                </div>
+            </section>
+
+            <section id="applicantsSection" class="detail-card" style="display: none;">
+                <div class="applicants-header">
+                    <div>
+                        <h2>지원자 목록</h2>
+                        <p class="applicants-helper">모집중 상태에서만 닉네임을 클릭해 프로필로 이동할 수 있습니다.</p>
+                    </div>
+                    <span class="applicants-count" id="applicantsCount">총 0명</span>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="applicants-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">No.</th>
+                                <th>닉네임</th>
+                                <th>이름</th>
+                                <th>이메일(ID)</th>
+                                <th>지원 일시</th>
+                                <th>승인/거부</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicantsTableBody">
+                            <tr>
+                                <td colspan="6" class="empty-cell">지원자가 없습니다.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="applicants-pagination" id="applicantsPagination"></div>
+            </section>
+            </div>
+
+            <!-- 작업 관리 탭 -->
+            <div id="tabTasks" class="tab-content" style="display: none;">
+                <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 500; color: #374151;">
+                        <span>차트 기간:</span>
+                        <input type="number" id="chartMonthCount" min="1" max="24" value="4" style="width: 80px; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; text-align: center;" onchange="updateChartPeriod()" onkeypress="if(event.key==='Enter') updateChartPeriod()">
+                        <span>개월</span>
+                    </label>
+                    <button onclick="updateChartPeriod()" style="background: #2563eb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: pointer; font-weight: 500;">적용</button>
+                </div>
+                <div class="gantt-wrapper" style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1.5rem; overflow-x: auto;">
+                    <table class="gantt-table" style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid #e5e7eb; padding: 0.75rem; text-align: center; background: #f3f4f6; font-weight: 600; position: sticky; top: 0; left: 0; z-index: 11;">작업</th>
+                                <th id="monthHeader" style="border: 1px solid #e5e7eb; padding: 0.75rem; text-align: center; background: #f3f4f6; font-weight: 600; position: sticky; top: 0; z-index: 10;">월</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksTableBody">
+                            <tr>
+                                <td colspan="2" style="text-align: center; padding: 2rem; color: #6b7280;">
+                                    작업이 없습니다. + 버튼을 클릭하여 작업을 추가하세요.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="add-task-btn" onclick="addTask()" style="background: #2563eb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; margin-top: 1rem;">+ 작업 추가</button>
+                </div>
+
+                <div id="subtasksSection" class="subtasks-section" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; display: none;">
+                    <div class="subtask-header" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-weight: 600; color: #374151;">
+                        <span>></span>
+                        <span id="selectedTaskTitle">작업1</span>
+                    </div>
+                    <ul class="subtask-list" id="subtaskList" style="list-style: none; padding: 0; margin: 0;"></ul>
+                    <button class="add-subtask-btn" onclick="addSubtask()" style="background: #ffffff; border: 1px dashed #d1d5db; color: #6b7280; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; margin-top: 0.5rem;">+ 세부 작업 추가</button>
+                </div>
+
+                <div id="taskDetailPanel" class="task-detail-panel" style="margin-top: 1.5rem; padding: 1.5rem; background: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb; display: none;">
+                    <div class="task-detail-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
+                        <span class="task-detail-label" style="min-width: 100px; font-weight: 600; color: #374151;">담당자</span>
+                        <select class="task-detail-value assignee-select" id="taskAssignee" onchange="updateTaskDetail('assignee')" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; cursor: pointer;">
+                            <option value="">선택 안함</option>
+                        </select>
+                    </div>
+                    <div class="task-detail-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
+                        <span class="task-detail-label" style="min-width: 100px; font-weight: 600; color: #374151;">시작일</span>
+                        <input type="date" class="task-detail-value date-input" id="taskStartDate" onchange="updateTaskDetail('startDate')" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem;">
+                    </div>
+                    <div class="task-detail-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
+                        <span class="task-detail-label" style="min-width: 100px; font-weight: 600; color: #374151;">Due date</span>
+                        <input type="date" class="task-detail-value date-input" id="taskDueDate" onchange="updateTaskDetail('dueDate')" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem;">
+                    </div>
+                    <div class="task-detail-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
+                        <span class="task-detail-label" style="min-width: 100px; font-weight: 600; color: #374151;">상태</span>
+                        <select class="task-detail-value status-select" id="taskStatus" onchange="updateTaskDetail('status')" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; cursor: pointer;">
+                            <option value="todo">To-do</option>
+                            <option value="in-progress">진행중</option>
+                            <option value="completed">완료</option>
+                            <option value="rework">재작업</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js?v=2"></script>
+    <script src="js/utils.js?v=2"></script>
+    <script src="js/api.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
+    <script src="js/nav.js?v=2"></script>
+    <script src="js/project-detail.js?v=3"></script>
+</body>
+</html>
