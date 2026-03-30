@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - WorkMate</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">WorkMate</a>
+            </div>
+            <div class="nav-links">
+                <a href="projects.html" data-nav="projects">프로젝트 찾기</a>
+                <a href="my-projects.html" data-nav="my-projects" data-requires-auth="true">내 프로젝트</a>
+                <a href="profile.html" data-nav="profile" data-requires-auth="true">프로필</a>
+                <a href="dashboard.html" data-nav="dashboard" data-requires-auth="true">대시보드</a>
+                <a href="login.html" class="btn-primary" id="navAuthButton">로그인</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container" style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem 3rem;">
+            <header style="margin-bottom: 2rem;">
+                <h1 style="font-size: 1.75rem; margin-bottom: 0.75rem;">FAQ</h1>
+                <p style="color: #6b7280;">자주 묻는 질문과 답변을 모았습니다. 궁금한 점이 해결되지 않으면, 문의하기를 통해 질문을 남겨주세요.</p>
+            </header>
+
+            <section id="faqList">
+                <div class="empty-state" style="display: block; padding: 2rem; text-align: center; color: #6b7280;">
+                    <p>등록된 FAQ가 없습니다.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>WorkMate</h3>
+                    <p><strong>한양대학교 ERICA</strong></p>
+                    <p>학교 주소</p>
+                </div>
+                <div class="footer-section">
+                    <h4>고객지원</h4>
+                    <ul>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="notices.html">공지사항</a></li>
+                        <li><a href="contact.html">문의하기</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 WorkMate. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/faq.js"></script>
+</body>
+</html>
+

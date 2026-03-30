@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대시보드 - WorkMate</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Replaced custom header with consistent navbar structure -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">WorkMate</a>
+            </div>
+            <div class="nav-links">
+                <a href="projects.html" data-nav="projects">프로젝트 찾기</a>
+                <a href="my-projects.html" data-nav="my-projects" data-requires-auth="true">내 프로젝트</a>
+                <a href="profile.html" data-nav="profile" data-requires-auth="true">프로필</a>
+                <a href="dashboard.html" data-nav="dashboard" data-requires-auth="true">대시보드</a>
+                <a href="login.html" class="btn-primary" id="navAuthButton">로그인</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Updated main content structure to match other pages -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <div class="header-content">
+                    <h1>대시보드</h1>
+                    <p>프로젝트와 모집글을 관리하세요</p>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>진행 중인 프로젝트</h3>
+                        <p>현재 참여 중인 프로젝트</p>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="active-projects">0</div>
+                        <p class="stat-label">개의 프로젝트</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>작성한 모집글</h3>
+                        <p>내가 작성한 모집글</p>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="my-posts">0</div>
+                        <p class="stat-label">개의 모집글</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>받은 지원</h3>
+                        <p>모집글에 받은 지원</p>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="applications">0</div>
+                        <p class="stat-label">개의 지원</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions and Recent Activity -->
+            <div class="dashboard-grid">
+                <div class="dashboard-section">
+                    <h3>빠른 작업</h3>
+                    <div class="quick-actions">
+                        <a href="projects-create.html" class="btn-primary">새 모집글 작성</a>
+                        <a href="projects.html" class="btn-secondary">모집글 둘러보기</a>
+                        <a href="my-projects.html" class="btn-secondary">내 프로젝트 관리</a>
+                    </div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h3>최근 활동</h3>
+                    <div class="activity-feed">
+                        <div class="activity-list" id="recent-activities">
+                            <div class="empty-state" style="display: none; padding: 2rem; text-align: center; color: #6b7280;">
+                                <p>최근 활동이 없습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
+
+

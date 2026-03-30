@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - WorkMate</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .admin-tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        .admin-tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+            font-weight: 600;
+        }
+        .admin-tab:hover {
+            color: #2563eb;
+        }
+        .admin-content {
+            display: none;
+        }
+        .admin-content.active {
+            display: block;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .admin-table th {
+            background: #f9fafb;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .admin-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        .admin-table tr:hover {
+            background: #f9fafb;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-active { background: #d1fae5; color: #065f46; }
+        .status-suspended { background: #fee2e2; color: #991b1b; }
+        .status-dormant { background: #fef3c7; color: #92400e; }
+        .status-withdrawn { background: #e5e7eb; color: #374151; }
+        .admin-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .admin-filters input,
+        .admin-filters select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        .admin-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+        }
+        .admin-table .admin-actions {
+            justify-content: center;
+        }
+        /* 페이지네이션: 번호·이전/다음 버튼 통일 */
+        .pagination-btn {
+            min-width: 2.25rem;
+            height: 2.25rem;
+            padding: 0 0.5rem;
+            margin: 0 2px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background: #fff;
+            color: #374151;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+        .pagination-btn:hover:not(:disabled):not(.pagination-disabled):not(.pagination-current) {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+        .pagination-current {
+            background: #6b7280 !important;
+            color: #fff !important;
+            border-color: #6b7280 !important;
+            cursor: default;
+        }
+        .pagination-arrow {
+            min-width: 2.25rem;
+        }
+        .pagination-disabled,
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .admin-pagination {
+            min-height: 2.5rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <main class="main-content">
+        <div class="admin-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h1>관리자 페이지</h1>
+                <button class="btn-secondary" onclick="logout()">로그아웃</button>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="users" onclick="switchAdminTab('users', event)">유저 관리</button>
+                <button class="admin-tab" data-tab="projects" onclick="switchAdminTab('projects', event)">게시글 관리</button>
+                <button class="admin-tab" data-tab="notices" onclick="switchAdminTab('notices', event)">공지사항</button>
+                <button class="admin-tab" data-tab="faqs" onclick="switchAdminTab('faqs', event)">FAQ</button>
+                <button class="admin-tab" data-tab="accounts" onclick="switchAdminTab('accounts', event)">Admin 계정 관리</button>
+                <button class="admin-tab" data-tab="support" onclick="switchAdminTab('support', event)">고객센터 관리</button>
+            </div>
+
+            <!-- 유저 관리 -->
+            <div id="adminUsers" class="admin-content active">
+                <div class="admin-filters">
+                    <input type="text" id="userSearch" placeholder="아이디, 닉네임, 이름 검색" onkeyup="loadUsers()">
+                    <select id="userStatusFilter" onchange="loadUsers()">
+                        <option value="all">전체 상태</option>
+                        <option value="active">활동 중</option>
+                        <option value="suspended">정지</option>
+                        <option value="dormant">휴면</option>
+                        <option value="withdrawn">탈퇴</option>
+                    </select>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table users-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>가입일</th>
+                                <th>유저명</th>
+                                <th>닉네임</th>
+                                <th>전화번호</th>
+                                <th>아이디</th>
+                                <th>마지막 활동일</th>
+                                <th>상태</th>
+                                <th>상세/정지</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr><td colspan="9" style="text-align: center; padding: 2rem;">로딩 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="usersPagination" class="admin-pagination"></div>
+            </div>
+
+            <!-- 게시글 관리 -->
+            <div id="adminProjects" class="admin-content">
+                <div class="admin-filters">
+                    <input type="text" id="projectSearch" placeholder="제목, 설명 검색" onkeyup="loadProjects()">
+                    <select id="projectStatusFilter" onchange="loadProjects()">
+                        <option value="all">전체 상태</option>
+                        <option value="recruiting">모집중</option>
+                        <option value="in-progress">진행중</option>
+                        <option value="completed">완료</option>
+                    </select>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>생성일</th>
+                                <th>제목</th>
+                                <th>작성자</th>
+                                <th>모집 상태</th>
+                                <th>게시 상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsTableBody">
+                            <tr><td colspan="6" style="text-align: center; padding: 2rem;">로딩 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="projectsPagination" class="admin-pagination"></div>
+            </div>
+
+            <!-- 공지사항 -->
+            <div id="adminNotices" class="admin-content">
+                <div style="margin-bottom: 1rem;">
+                    <button class="btn-primary" onclick="openNoticeModal()">공지사항 작성</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>제목</th>
+                                <th>작성자</th>
+                                <th>작성일</th>
+                                <th>중요</th>
+                                <th>수정/삭제</th>
+                            </tr>
+                        </thead>
+                        <tbody id="noticesTableBody">
+                            <tr><td colspan="5" style="text-align: center; padding: 2rem;">로딩 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noticesPagination" class="admin-pagination"></div>
+            </div>
+
+            <!-- FAQ -->
+            <div id="adminFaqs" class="admin-content">
+                <div style="margin-bottom: 1rem;">
+                    <button class="btn-primary" onclick="openFAQModal()">FAQ 작성</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>순서</th>
+                                <th>질문</th>
+                                <th>답변</th>
+                                <th>작성일</th>
+                                <th>수정/삭제</th>
+                            </tr>
+                        </thead>
+                        <tbody id="faqsTableBody">
+                            <tr><td colspan="5" style="text-align: center; padding: 2rem;">로딩 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="faqsPagination" class="admin-pagination"></div>
+            </div>
+
+            <!-- Admin 계정 관리 -->
+            <div id="adminAccounts" class="admin-content">
+                <div class="admin-filters">
+                    <input type="text" id="adminSearch" placeholder="이름, 아이디, 이메일 검색" onkeyup="loadAdminAccounts()">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <button class="btn-primary" onclick="openAdminAccountModal()">관리자 계정 등록</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>이름</th>
+                                <th>아이디</th>
+                                <th>이메일</th>
+                                <th>권한</th>
+                                <th>계정생성일</th>
+                                <th>최근접속일</th>
+                                <th>상세/삭제</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminAccountsTableBody">
+                            <tr><td colspan="8" style="text-align: center; padding: 2rem;">로딩 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="adminAccountsPagination" class="admin-pagination"></div>
+            </div>
+
+            <!-- 고객센터 관리 -->
+            <div id="adminSupport" class="admin-content">
+                <div class="admin-filters">
+                    <select id="supportStatusFilter" onchange="loadSupportTickets()">
+                        <option value="all">전체 상태</option>
+                        <option value="pending">미확인</option>
+                        <option value="answered">답변완료</option>
+                    </select>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>작성자</th>
+                                <th>글 제목</th>
+                                <th>작성일</th>
+                                <th>상태</th>
+                                <th>상세</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supportTableBody">
+                            <tr><td colspan="6" style="text-align: center; padding: 2rem;">문의글이 없습니다.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="supportPagination" class="admin-pagination"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 프로젝트 삭제 메시지 모달 -->
+    <div id="deleteProjectModal" class="modal">
+        <div class="modal-content">
+            <h3>프로젝트 삭제</h3>
+            <p>작성자에게 메시지를 보내시겠습니까?</p>
+            <div class="form-group">
+                <label>메시지 (선택사항)</label>
+                <textarea id="deleteMessage" placeholder="삭제 사유를 작성해주세요..."></textarea>
+            </div>
+            <!-- 삭제 대상 프로젝트 ID (전역변수 타이밍 이슈 방지용) -->
+            <input type="hidden" id="deleteProjectTargetId" />
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                <button class="btn-secondary" onclick="closeDeleteProjectModal()">취소</button>
+                <button class="btn-danger" onclick="confirmDeleteProject()">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 공지사항 작성/수정 모달 -->
+    <div id="noticeModal" class="modal">
+        <div class="modal-content">
+            <h3 id="noticeModalTitle">공지사항 작성</h3>
+            <div class="form-group">
+                <label>제목</label>
+                <input type="text" id="noticeTitle" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label>내용</label>
+                <textarea id="noticeContent" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="noticeImportant"> 중요 공지사항
+                </label>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                <button class="btn-secondary" onclick="closeNoticeModal()">취소</button>
+                <button class="btn-primary" onclick="saveNotice()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ 작성/수정 모달 -->
+    <div id="faqModal" class="modal">
+        <div class="modal-content">
+            <h3 id="faqModalTitle">FAQ 작성</h3>
+            <div class="form-group">
+                <label>질문</label>
+                <input type="text" id="faqQuestion" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label>답변</label>
+                <textarea id="faqAnswer" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>순서</label>
+                <input type="number" id="faqOrder" class="form-input" value="1" min="1" step="1">
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                <button class="btn-secondary" onclick="closeFAQModal()">취소</button>
+                <button class="btn-primary" onclick="saveFAQ()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 관리자 계정 등록/수정 모달 -->
+    <div id="adminAccountModal" class="modal">
+        <div class="modal-content">
+            <h3 id="adminAccountModalTitle">관리자 계정 등록</h3>
+            <div class="form-group">
+                <label>이름</label>
+                <input type="text" id="adminAccountName" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>아이디</label>
+                <input type="text" id="adminAccountUsername" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>이메일</label>
+                <input type="email" id="adminAccountEmail" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>비밀번호<span id="adminAccountPasswordHint" style="font-size: 0.85rem; color: #6b7280; margin-left: 0.5rem;">(신규 생성 시 필수)</span></label>
+                <input type="password" id="adminAccountPassword" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>권한</label>
+                <select id="adminAccountPermission" class="form-input">
+                    <option value="full">전체권한</option>
+                    <option value="read">조회가능</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                <button class="btn-secondary" onclick="closeAdminAccountModal()">취소</button>
+                <button class="btn-primary" onclick="saveAdminAccount()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 고객센터 문의 상세/답변 모달 -->
+    <div id="supportDetailModal" class="modal">
+        <div class="modal-content">
+            <h3>문의 상세</h3>
+            <div id="supportDetailBody" style="margin-bottom: 1rem;"></div>
+            <div class="form-group">
+                <label>답변</label>
+                <textarea id="supportAnswer"></textarea>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                <button class="btn-secondary" onclick="closeSupportDetailModal()">취소</button>
+                <button class="btn-primary" onclick="saveSupportAnswer()">답변 저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 유저 상세 정보 모달 -->
+    <div id="userDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">유저 상세 정보</h3>
+                <button class="modal-close" onclick="closeUserDetailModal()">&times;</button>
+            </div>
+            <div id="userDetailBody" style="margin-bottom: 1.5rem;"></div>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="closeUserDetailModal()">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
+

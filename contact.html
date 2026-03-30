@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의하기 - WorkMate</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">WorkMate</a>
+            </div>
+            <div class="nav-links">
+                <a href="projects.html" data-nav="projects">프로젝트 찾기</a>
+                <a href="my-projects.html" data-nav="my-projects" data-requires-auth="true">내 프로젝트</a>
+                <a href="profile.html" data-nav="profile" data-requires-auth="true">프로필</a>
+                <a href="dashboard.html" data-nav="dashboard" data-requires-auth="true">대시보드</a>
+                <a href="login.html" class="btn-primary" id="navAuthButton">로그인</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container" style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem;">
+            <h1 style="font-size: 1.75rem; margin-bottom: 1rem;">문의하기</h1>
+            <p style="color: #6b7280; margin-bottom: 2rem;">서비스 이용 중 궁금한 점이나 불편사항을 남겨주세요. 관리자가 확인 후 답변을 남깁니다.</p>
+
+            <section style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">새 문의 작성</h2>
+                <div class="card" style="padding: 1.5rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+                    <div class="form-group">
+                        <label for="supportTitle">제목</label>
+                        <input type="text" id="supportTitle" class="form-input" placeholder="어떤 내용에 대한 문의인가요?">
+                    </div>
+                    <div class="form-group">
+                        <label for="supportContent">내용</label>
+                        <textarea id="supportContent" class="form-input" style="min-height: 160px;" placeholder="자세한 상황과 내용을 적어주시면 더 빠르게 도와드릴 수 있습니다."></textarea>
+                    </div>
+                    <div style="text-align: right; margin-top: 1rem;">
+                        <button class="btn-primary" id="supportSubmitBtn">문의 등록</button>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">내 문의 내역</h2>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table public-table table-text-wrap" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">No.</th>
+                                <th>제목</th>
+                                <th style="width: 140px;">작성일</th>
+                                <th style="width: 100px;">상태</th>
+                                <th style="width: 80px;">상세</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mySupportTableBody">
+                            <tr><td colspan="5" style="text-align: center; padding: 2rem;">로그인 후 이용 가능합니다.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="mySupportPagination" style="margin-top: 1rem; text-align: center;"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 문의 상세 모달 -->
+    <div id="mySupportDetailModal" class="modal">
+        <div class="modal-content">
+            <h3>문의 상세</h3>
+            <div id="mySupportDetailBody" style="margin-bottom: 1rem;"></div>
+            <div style="text-align: right; margin-top: 1rem;">
+                <button class="btn-primary" onclick="closeMySupportDetailModal()">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 - WorkMate</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">WorkMate</a>
+            </div>
+            <div class="nav-links">
+                <a href="projects.html" data-nav="projects">프로젝트 찾기</a>
+                <a href="my-projects.html" data-nav="my-projects" data-requires-auth="true">내 프로젝트</a>
+                <a href="profile.html" data-nav="profile" data-requires-auth="true">프로필</a>
+                <a href="dashboard.html" data-nav="dashboard" data-requires-auth="true">대시보드</a>
+                <a href="login.html" class="btn-primary" id="navAuthButton">로그인</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- 프로필 헤더 -->
+            <div class="profile-header">
+                <div class="profile-info">
+                    <div class="profile-avatar" id="profileAvatar">-</div>
+                    <div class="profile-details">
+                        <h1 id="profileName">-</h1>
+                        <p id="profileMeta">-</p>
+                        <p id="profileEmail">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 탭 메뉴 -->
+            <div class="profile-tabs">
+                <button class="tab-button active" onclick="showTab('overview', this)">개요</button>
+                <button class="tab-button" onclick="showTab('blocked', this)">차단한 사용자</button>
+                <button class="tab-button" onclick="showTab('settings', this)">프로필 수정</button>
+            </div>
+
+            <!-- 개요 탭 -->
+            <div id="overview" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="registeredProjects">0</div>
+                        <div class="stat-label">등록한 프로젝트</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="participatedProjects">0</div>
+                        <div class="stat-label">참여한 프로젝트</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="completedProjects">0</div>
+                        <div class="stat-label">완료한 프로젝트</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 차단한 사용자 탭 -->
+            <div id="blocked" class="tab-content">
+                <div id="blockedUsersList">
+                    <div class="empty-state" style="display: block; padding: 2rem; text-align: center; color: #6b7280;">
+                        <p>차단한 사용자가 없습니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 프로필 수정 탭 -->
+            <div id="settings" class="tab-content">
+                <div class="settings-section">
+                    <h3>프로필 정보 수정</h3>
+                    <form onsubmit="updateProfile(event)">
+                        <div class="form-group">
+                            <label for="nickname" class="form-label">닉네임</label>
+                            <input type="text" id="nickname" class="form-input" required placeholder="닉네임을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">이메일</label>
+                            <input type="email" id="email" class="form-input" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone" class="form-label">휴대폰 번호</label>
+                            <input type="tel" id="phone" class="form-input" value="" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+                        </div>
+                        <button type="submit" class="btn-primary">정보 수정</button>
+                    </form>
+                </div>
+
+                <div class="settings-section">
+                    <h3>비밀번호 변경</h3>
+                    <form onsubmit="changePassword(event)">
+                        <div class="form-group">
+                            <label for="currentPassword" class="form-label">현재 비밀번호</label>
+                            <input type="password" id="currentPassword" class="form-input" required placeholder="현재 비밀번호를 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword" class="form-label">비밀번호 변경</label>
+                            <input type="password" id="newPassword" class="form-input" required placeholder="새 비밀번호를 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword" class="form-label">비밀번호 변경 확인</label>
+                            <input type="password" id="confirmPassword" class="form-input" required placeholder="새 비밀번호를 다시 입력하세요">
+                            <div id="passwordMatchError" class="error-message" style="display: none; color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">비밀번호를 확인해주세요</div>
+                        </div>
+                        <button type="submit" id="changePasswordBtn" class="btn-primary" disabled>비밀번호 변경</button>
+                    </form>
+                </div>
+
+                <div class="settings-section">
+                    <h3>계정 관리</h3>
+                    <p class="warning-text">
+                        계정을 삭제하면 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.
+                    </p>
+                    <button class="btn-danger" onclick="deleteAccount()">회원 탈퇴</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 프로젝트 - 프로젝트 매칭 플랫폼</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">WorkMate</a>
+            </div>
+            <div class="nav-links">
+                <a href="projects.html" data-nav="projects">프로젝트 찾기</a>
+                <a href="my-projects.html" data-nav="my-projects" data-requires-auth="true">내 프로젝트</a>
+                <a href="profile.html" data-nav="profile" data-requires-auth="true">프로필</a>
+                <a href="dashboard.html" data-nav="dashboard" data-requires-auth="true">대시보드</a>
+                <a href="login.html" class="btn-primary" id="navAuthButton">로그인</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <div class="header-content">
+                    <h1>내 프로젝트</h1>
+                    <p>참여하고 있는 프로젝트를 관리하세요</p>
+                </div>
+                <a class="btn-primary" href="projects-create.html">
+                    <span class="icon">+</span>새 프로젝트
+                </a>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="search-filters">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="프로젝트 이름으로 검색..." onkeyup="filterProjects()">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <select id="statusFilter" class="form-select" onchange="filterProjects()">
+                    <option value="all">전체 상태</option>
+                    <option value="recruiting">모집중</option>
+                    <option value="in-progress">진행중</option>
+                    <option value="completed">완료</option>
+                    <option value="cancelled">취소됨</option>
+                </select>
+            </div>
+
+            <section class="my-projects-section">
+                <div class="section-header">
+                    <h2>내가 만든 프로젝트</h2>
+                    <p class="section-subtitle">직접 등록한 모집 글 목록입니다.</p>
+                </div>
+                <div class="projects-grid" id="myCreatedProjects"></div>
+                <div id="createdEmptyState" class="empty-state" data-default-message="첫 번째 모집 글을 작성해보세요." style="display: none;">
+                    <div class="empty-icon">📝</div>
+                    <h3>등록한 프로젝트가 없습니다</h3>
+                    <p>첫 번째 모집 글을 작성해보세요.</p>
+                    <a class="btn-primary" href="projects-create.html">프로젝트 만들기</a>
+                </div>
+            </section>
+
+            <section class="my-projects-section">
+                <div class="section-header">
+                    <h2>내가 지원한 프로젝트</h2>
+                    <p class="section-subtitle">참여 신청한 프로젝트 목록입니다.</p>
+                </div>
+                <div class="projects-grid" id="myParticipatedProjects"></div>
+                <div id="participatedEmptyState" class="empty-state" data-default-message="관심 있는 프로젝트에 지원해보세요." style="display: none;">
+                    <div class="empty-icon">🙋‍♂️</div>
+                    <h3>지원한 프로젝트가 없습니다</h3>
+                    <p>관심 있는 프로젝트에 지원해보세요.</p>
+                    <a class="btn-primary" href="projects.html">프로젝트 찾기</a>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/my-projects.js"></script>
+</body>
+</html>
+
+
+

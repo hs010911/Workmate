@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로젝트 등록 - WorkMate</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">WorkMate</a>
+            </div>
+            <div class="nav-links">
+                <a href="projects.html" data-nav="projects">프로젝트 찾기</a>
+                <a href="my-projects.html" data-nav="my-projects" data-requires-auth="true">내 프로젝트</a>
+                <a href="profile.html" data-nav="profile" data-requires-auth="true">프로필</a>
+                <a href="dashboard.html" data-nav="dashboard" data-requires-auth="true">대시보드</a>
+                <a href="login.html" class="btn-primary" id="navAuthButton">로그인</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container" style="padding: 2rem 1rem;">
+            <div style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">프로젝트 등록</h1>
+                <p style="color: #6b7280;">새로운 프로젝트 모집글을 작성하세요</p>
+            </div>
+
+            <div class="form-container" style="max-width: 800px;">
+                <form id="projectCreateForm">
+                    <div class="form-group">
+                        <label class="form-label" for="projectTitle">프로젝트 제목 *</label>
+                        <input type="text" id="projectTitle" name="title" class="form-input" required placeholder="예: React 기반 웹 애플리케이션 개발">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="projectDescription">프로젝트 설명 *</label>
+                        <textarea id="projectDescription" name="description" class="form-textarea" required placeholder="프로젝트에 대한 자세한 설명을 입력하세요"></textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="category">카테고리 *</label>
+                            <select id="category" name="category" class="form-select" required>
+                                <option value="">선택하세요</option>
+                                <option value="web">웹 개발</option>
+                                <option value="mobile">모바일 앱</option>
+                                <option value="ai">AI/ML</option>
+                                <option value="game">게임</option>
+                                <option value="design">디자인</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="maxParticipants">모집 인원 *</label>
+                            <input type="number" id="maxParticipants" name="maxParticipants" class="form-input" required min="1" max="20" value="5">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="deadline">모집 마감일 *</label>
+                            <input type="date" id="deadline" name="deadline" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="requirements">필요한 기술/역할</label>
+                        <textarea id="requirements" name="requirements" class="form-textarea" placeholder="예: React, Node.js, MongoDB를 다룰 수 있는 풀스택 개발자"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="tags">태그 (쉼표로 구분)</label>
+                        <input type="text" id="tags" name="tags" class="form-input" placeholder="예: React, Node.js, MongoDB, TypeScript">
+                        <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">태그는 쉼표로 구분하여 입력하세요</p>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn-primary" style="flex: 1;">프로젝트 등록</button>
+                        <button type="button" class="btn-secondary" onclick="window.location.href='projects.html'" style="flex: 1;">취소</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/projects-create.js"></script>
+</body>
+</html>
+
+
+
+
+
+
