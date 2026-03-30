@@ -12,7 +12,12 @@
   const protocol = window.location.protocol;
   const port = 3001;
 
-  // 필요하면 아래를 해제해 window.apiBase를 직접 지정할 수 있습니다.
+  /** Netlify 등 정적 호스팅: API는 Render 서브도메인 */
+  const RENDER_API_BASE = "https://workmate-api.onrender.com";
+  if (hostname.endsWith(".netlify.app")) {
+    window.apiBase = RENDER_API_BASE;
+    return;
+  }
 
   const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
   const isFileProtocol = protocol === "file:" || hostname === "";
