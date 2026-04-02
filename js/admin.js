@@ -30,24 +30,30 @@ const USER_STATUS_MAP = {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-    if (!isLoggedIn()) {
-        window.location.href = "login.html";
-        return;
-    }
-
     try {
+        // 1차 가드: 세션에 저장된 role 기준으로 빠르게 차단
+        if (!isLoggedIn()) {
+            window.location.replace("admin-login.html");
+            return;
+        }
+
         const user = getCurrentUser();
         if (!user) {
-            window.location.href = "login.html";
+            window.location.replace("admin-login.html");
+            return;
+        }
+
+        if (user.role !== "admin") {
+            showNotification?.("관리자만 접근할 수 있습니다.", "error");
+            window.location.replace("index.html");
             return;
         }
 
         const userData = await apiGet("/api/auth/me");
 
         if (!userData.user || userData.user.role !== "admin") {
-            showModal("알림", "관리자 권한이 필요합니다.", () => {
-                window.location.href = "index.html";
-            });
+            showNotification?.("관리자 권한이 필요합니다.", "error");
+            window.location.replace("index.html");
             return;
         }
 
@@ -61,7 +67,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         ]);
     } catch (error) {
         showError("권한 확인 실패", error);
-        window.location.href = "index.html";
+        window.location.replace("index.html");
     }
 });
 
