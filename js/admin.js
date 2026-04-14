@@ -197,7 +197,7 @@ function escapeHtml(text) {
 }
 
 /**
- * 페이지네이션 렌더링 (기획서: 현재 페이지 회색+흰글씨, 페이지 번호 버튼)
+ * 목록 페이지네이션: 이전/다음·번호 버튼을 만들고, 현재 페이지에 pagination-current 클래스를 붙인다.
  * @param {number} total - 전체 항목 수
  * @param {number} page - 현재 페이지
  * @param {number} limit - 페이지당 항목 수

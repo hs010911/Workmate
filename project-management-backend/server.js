@@ -277,7 +277,7 @@ app.get("/api/projects/:id", async (req, res) => {
  * @body {string} category - 카테고리
  * @body {number} maxParticipants - 최대 참여자 수
  * @body {string} deadline - 모집 마감일
- * @body {string} requirements - 요구사항
+ * @body {string} requirements - 모집 조건·자격 설명(선택)
  * @body {Array} tags - 태그 배열
  */
 app.post("/api/projects", auth, async (req, res) => {
