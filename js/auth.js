@@ -3,7 +3,7 @@
  * @description 사용자 로그인/회원가입 처리
  */
 let phoneVerified = false;
-/** 개발용: 실제 SMS 없이 가입 가능 */
+/** true면 회원가입에서 휴대폰 인증 UI를 숨기고 인증 없이 제출 가능 */
 const testMode = true;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -245,7 +245,7 @@ function setupPhoneVerification() {
 /**
  * 알림 표시
  * @param {string} message - 알림 메시지
- * @param {string} type - 알림 타입 (사용되지 않음, 하위 호환성 유지)
+ * @param {string} type - 알림 타입(호환용 인자, 내부에서 미사용)
  */
 function showNotification(message, type = "info") {
     showModal("알림", message);

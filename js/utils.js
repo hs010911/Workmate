@@ -308,8 +308,6 @@ function confirmAction(message) {
     });
 }
 
-// 에러 처리
-
 /**
  * 에러 메시지 표시
  * @param {string} message - 에러 메시지
@@ -320,8 +318,6 @@ function showError(message, error = null) {
     const errorMessage = message + (error ? `: ${error.message || error}` : "");
     showModal("오류", errorMessage);
 }
-
-// 하위 호환성
 
 function closeCommonModal() {
     closeModal("commonModal");

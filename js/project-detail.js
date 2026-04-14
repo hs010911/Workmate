@@ -1,6 +1,5 @@
 /**
- * @fileoverview project-detail.html — 상세·지원·작업(트리)·참여자·일정 차트
- * @description 본 파일 분량이 크므로 수정 시 APPLICANTS_PAGE_SIZE·tasks 렌더 경로 유의.
+ * @fileoverview project-detail.html — 프로젝트 상세, 지원, 작업(간트)·참여자·일정 표시
  */
 
 const APPLICANTS_PAGE_SIZE = 10;
