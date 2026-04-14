@@ -1662,8 +1662,29 @@ body {
 }
 
 @media (max-width: 768px) {
+  .nav-container {
+    position: relative;
+  }
+
   .nav-links {
     display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 1rem;
+    margin: 0;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+    z-index: 200;
+  }
+
+  .nav-links.active {
+    display: flex;
   }
 
   .mobile-menu-btn {
