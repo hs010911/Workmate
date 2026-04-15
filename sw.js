@@ -1,4 +1,4 @@
-const CACHE = "workmate-pwa-v1";
+const CACHE = "workmate-pwa-v3";
 
 const PRECACHE_URLS = [
   "/index.html",
