@@ -847,7 +847,7 @@ function generateMonthHeaders() {
         const headerText = `${monthYear}년 ${monthName}`;
         
         const th = document.createElement("th");
-        th.style.cssText = "border: 1px solid #e5e7eb; padding: 0.75rem; text-align: center; background: #f3f4f6; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 120px;";
+        th.className = "gantt-th-month-col";
         th.textContent = headerText;
         headerRow.appendChild(th);
         createdHeaders.push(headerText);
@@ -867,7 +867,6 @@ function generateMonthHeaders() {
                         const { year: ty, month: am } = calculateMonthYear(currentMonth, currentYear, i);
                         const td = document.createElement("td");
                         td.className = "month-cell";
-                        td.style.cssText = "text-align: center;";
                         td.innerHTML = buildWeekDividerOverlay(ty, am);
                         row.appendChild(td);
                     }
@@ -881,7 +880,6 @@ function generateMonthHeaders() {
                 const { year: ty, month: am } = calculateMonthYear(currentMonth, currentYear, i);
                 const td = document.createElement("td");
                 td.className = "month-cell";
-                td.style.cssText = "text-align: center;";
                 td.innerHTML = buildWeekDividerOverlay(ty, am);
                 row.appendChild(td);
             }
@@ -924,7 +922,7 @@ function updateChartPeriod() {
             const monthCount = chartMonthCount;
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="${monthCount + 1}" style="text-align: center; padding: 2rem; color: #6b7280;">
+                    <td colspan="${monthCount + 1}" class="tasks-empty-placeholder">
                         작업이 없습니다. + 버튼을 클릭하여 작업을 추가하세요.
                     </td>
                 </tr>
@@ -951,7 +949,7 @@ function renderTasks() {
         
         tbody.innerHTML = `
             <tr>
-                <td colspan="${monthCount + 1}" style="text-align: center; padding: 2rem; color: #6b7280;">
+                <td colspan="${monthCount + 1}" class="tasks-empty-placeholder">
                     작업이 없습니다. + 버튼을 클릭하여 작업을 추가하세요.
                 </td>
             </tr>
@@ -967,19 +965,19 @@ function renderTasks() {
         const hasSubtasks = subtasks.length > 0;
         const isExpanded = expandedTasks.has(String(task._id));
         const expandBtnHtml = hasSubtasks
-            ? "<button class=\"task-expand-btn\" onclick=\"toggleSubtasks('" + task._id + "')\" data-expanded=\"" + isExpanded + "\" style=\"background: none; border: none; cursor: pointer; padding: 0.25rem; color: #6b7280; font-size: 0.875rem;\">" + (isExpanded ? "▲" : "▼") + "</button>"
+            ? "<button type=\"button\" class=\"task-expand-btn\" onclick=\"toggleSubtasks('" + task._id + "')\" data-expanded=\"" + isExpanded + "\" aria-label=\"" + (isExpanded ? "세부 작업 접기" : "세부 작업 펼치기") + "\">" + (isExpanded ? "▲" : "▼") + "</button>"
             : "";
 
         html += `
             <tr class="task-row" data-task-id="${task._id}">
-                <td class="task-cell" style="text-align: left; display: flex; align-items: center; gap: 0.5rem; border: 1px solid #e5e7eb; padding: 0.75rem; position: sticky; left: 0; background: #ffffff; z-index: 5;">
+                <td class="task-cell">
                     <input type="checkbox" class="task-checkbox" ${task.status === "completed" ? "checked" : ""} 
-                        onchange="toggleTaskStatus('${task._id}')" style="width: 18px; height: 18px; cursor: pointer;">
+                        onchange="toggleTaskStatus('${task._id}')">
                     ${expandBtnHtml}
-                    <span class="task-title" data-task-id="${task._id}" onclick="selectTask('${task._id}')" ondblclick="editTaskTitle('${task._id}', event)" style="flex: 1; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                    <span class="task-title" data-task-id="${task._id}" onclick="selectTask('${task._id}')" ondblclick="editTaskTitle('${task._id}', event)">
                         ${escapeHtml(task.title)}
                     </span>
-                    <button class="task-delete-btn" onclick="deleteTask('${task._id}')" style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.75rem;" title="작업 삭제">×</button>
+                    <button type="button" class="task-delete-btn" onclick="deleteTask('${task._id}')" title="작업 삭제" aria-label="작업 삭제">×</button>
                 </td>
                 ${generateMonthCells(task)}
             </tr>
@@ -988,14 +986,14 @@ function renderTasks() {
         if (hasSubtasks && isExpanded) {
             subtasks.forEach((subtask) => {
                 html += `
-                    <tr class="subtask-row" data-task-id="${subtask._id}" data-parent-id="${task._id}" style="background: #f9fafb;">
-                        <td class="task-cell" style="text-align: left; display: flex; align-items: center; gap: 0.5rem; border: 1px solid #e5e7eb; padding: 0.75rem; padding-left: 3rem; position: sticky; left: 0; background: #f9fafb; z-index: 4;">
+                    <tr class="subtask-row" data-task-id="${subtask._id}" data-parent-id="${task._id}">
+                        <td class="task-cell task-cell--subtask">
                             <input type="checkbox" class="task-checkbox" ${subtask.status === "completed" ? "checked" : ""} 
-                                onchange="toggleTaskStatus('${subtask._id}')" style="width: 18px; height: 18px; cursor: pointer;">
-                            <span class="task-title" data-task-id="${subtask._id}" onclick="selectTask('${subtask._id}')" ondblclick="editTaskTitle('${subtask._id}', event)" style="flex: 1; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                                onchange="toggleTaskStatus('${subtask._id}')">
+                            <span class="task-title" data-task-id="${subtask._id}" onclick="selectTask('${subtask._id}')" ondblclick="editTaskTitle('${subtask._id}', event)">
                                 ${escapeHtml(subtask.title)}
                             </span>
-                            <button class="task-delete-btn" onclick="deleteTask('${subtask._id}')" style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.75rem;" title="작업 삭제">×</button>
+                            <button type="button" class="task-delete-btn" onclick="deleteTask('${subtask._id}')" title="작업 삭제" aria-label="작업 삭제">×</button>
                         </td>
                         ${generateMonthCells(subtask)}
                     </tr>

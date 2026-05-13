@@ -115,61 +115,62 @@
             </div>
 
             <!-- 작업 관리 탭 -->
-            <div id="tabTasks" class="tab-content" style="display: none;">
-                <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 500; color: #374151;">
-                        <span>차트 기간:</span>
-                        <input type="number" id="chartMonthCount" min="1" max="24" value="4" style="width: 80px; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; text-align: center;" onchange="updateChartPeriod()" onkeypress="if(event.key==='Enter') updateChartPeriod()">
+            <div id="tabTasks" class="tab-content tab-tasks-panel" style="display: none;">
+                <p class="gantt-mobile-hint" aria-hidden="true">가로로 스크롤하면 전체 일정 차트를 볼 수 있습니다.</p>
+                <div class="task-chart-toolbar">
+                    <label class="task-chart-label">
+                        <span>차트 기간</span>
+                        <input type="number" id="chartMonthCount" class="chart-month-input" min="1" max="24" value="4" onchange="updateChartPeriod()" onkeypress="if(event.key==='Enter') updateChartPeriod()">
                         <span>개월</span>
                     </label>
-                    <button onclick="updateChartPeriod()" style="background: #2563eb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: pointer; font-weight: 500;">적용</button>
+                    <button type="button" class="btn-primary task-chart-apply" onclick="updateChartPeriod()">적용</button>
                 </div>
-                <div class="gantt-wrapper" style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1.5rem; overflow-x: auto;">
-                    <table class="gantt-table" style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                <div class="gantt-wrapper">
+                    <table class="gantt-table">
                         <thead>
                             <tr>
-                                <th style="border: 1px solid #e5e7eb; padding: 0.75rem; text-align: center; background: #f3f4f6; font-weight: 600; position: sticky; top: 0; left: 0; z-index: 11;">작업</th>
-                                <th id="monthHeader" style="border: 1px solid #e5e7eb; padding: 0.75rem; text-align: center; background: #f3f4f6; font-weight: 600; position: sticky; top: 0; z-index: 10;">월</th>
+                                <th class="gantt-th-task">작업</th>
+                                <th id="monthHeader" class="gantt-th-month-placeholder">월</th>
                             </tr>
                         </thead>
                         <tbody id="tasksTableBody">
                             <tr>
-                                <td colspan="2" style="text-align: center; padding: 2rem; color: #6b7280;">
+                                <td colspan="2" class="tasks-empty-placeholder">
                                     작업이 없습니다. + 버튼을 클릭하여 작업을 추가하세요.
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <button class="add-task-btn" onclick="addTask()" style="background: #2563eb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; margin-top: 1rem;">+ 작업 추가</button>
+                    <button type="button" class="add-task-btn" onclick="addTask()">+ 작업 추가</button>
                 </div>
 
-                <div id="subtasksSection" class="subtasks-section" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; display: none;">
-                    <div class="subtask-header" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-weight: 600; color: #374151;">
+                <div id="subtasksSection" class="subtasks-section" style="display: none;">
+                    <div class="subtask-header">
                         <span>></span>
                         <span id="selectedTaskTitle">작업1</span>
                     </div>
-                    <ul class="subtask-list" id="subtaskList" style="list-style: none; padding: 0; margin: 0;"></ul>
-                    <button class="add-subtask-btn" onclick="addSubtask()" style="background: #ffffff; border: 1px dashed #d1d5db; color: #6b7280; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; margin-top: 0.5rem;">+ 세부 작업 추가</button>
+                    <ul class="subtask-list" id="subtaskList"></ul>
+                    <button type="button" class="add-subtask-btn" onclick="addSubtask()">+ 세부 작업 추가</button>
                 </div>
 
-                <div id="taskDetailPanel" class="task-detail-panel" style="margin-top: 1.5rem; padding: 1.5rem; background: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb; display: none;">
-                    <div class="task-detail-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
-                        <span class="task-detail-label" style="min-width: 100px; font-weight: 600; color: #374151;">담당자</span>
-                        <select class="task-detail-value assignee-select" id="taskAssignee" onchange="updateTaskDetail('assignee')" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; cursor: pointer;">
+                <div id="taskDetailPanel" class="task-detail-panel" style="display: none;">
+                    <div class="task-detail-row">
+                        <span class="task-detail-label">담당자</span>
+                        <select class="task-detail-value assignee-select" id="taskAssignee" onchange="updateTaskDetail('assignee')">
                             <option value="">선택 안함</option>
                         </select>
                     </div>
-                    <div class="task-detail-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
-                        <span class="task-detail-label" style="min-width: 100px; font-weight: 600; color: #374151;">시작일</span>
-                        <input type="date" class="task-detail-value date-input" id="taskStartDate" onchange="updateTaskDetail('startDate')" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem;">
+                    <div class="task-detail-row">
+                        <span class="task-detail-label">시작일</span>
+                        <input type="date" class="task-detail-value date-input" id="taskStartDate" onchange="updateTaskDetail('startDate')">
                     </div>
-                    <div class="task-detail-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
-                        <span class="task-detail-label" style="min-width: 100px; font-weight: 600; color: #374151;">Due date</span>
-                        <input type="date" class="task-detail-value date-input" id="taskDueDate" onchange="updateTaskDetail('dueDate')" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem;">
+                    <div class="task-detail-row">
+                        <span class="task-detail-label">Due date</span>
+                        <input type="date" class="task-detail-value date-input" id="taskDueDate" onchange="updateTaskDetail('dueDate')">
                     </div>
-                    <div class="task-detail-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
-                        <span class="task-detail-label" style="min-width: 100px; font-weight: 600; color: #374151;">상태</span>
-                        <select class="task-detail-value status-select" id="taskStatus" onchange="updateTaskDetail('status')" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; cursor: pointer;">
+                    <div class="task-detail-row">
+                        <span class="task-detail-label">상태</span>
+                        <select class="task-detail-value status-select" id="taskStatus" onchange="updateTaskDetail('status')">
                             <option value="todo">To-do</option>
                             <option value="in-progress">진행중</option>
                             <option value="completed">완료</option>
@@ -186,7 +187,7 @@
     <script src="js/api.js?v=2"></script>
     <script src="js/main.js?v=2"></script>
     <script src="js/nav.js?v=2"></script>
-    <script src="js/project-detail.js?v=3"></script>
+    <script src="js/project-detail.js?v=4"></script>
     <script src="js/pwa-register.js"></script>
 </body>
 </html>
