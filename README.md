@@ -59,3 +59,5 @@ npm start              # 기본 포트 3001
 4. 푸시/병합 → 채팅·AI 요약·작업 자동 매칭·Skill-DNA(2주 상위 10% 배지)  
 5. PM **완료** 버튼, 채팅에서 작업 선택 후 메시지 전송  
 6. **푸시 알림**: `node scripts/generate-vapid-keys.js` 후 `.env`에 VAPID 키 설정 → 프로필/채팅에서「푸시 알림 켜기」
+
+webhooktest 260523
