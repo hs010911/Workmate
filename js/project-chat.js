@@ -25,7 +25,8 @@ function renderChatMessage(msg, isOwner) {
   html += `<p class="chat-message-body">${escapeHtml(msg.body)}</p>`;
 
   if (msg.summary) {
-    html += `<p class="chat-message-summary">AI 요약: ${escapeHtml(msg.summary)}</p>`;
+    const summaryLabel = msg.summaryViaGroq ? "AI 요약 (Groq)" : "요약";
+    html += `<p class="chat-message-summary">${summaryLabel}: ${escapeHtml(msg.summary)}</p>`;
   }
 
   if (msg.linkedTask?.title) {

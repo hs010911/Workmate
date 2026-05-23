@@ -49,7 +49,8 @@ npm start              # 기본 포트 3001
 - `PUBLIC_APP_URL` — 채팅·Webhook 링크용 프론트 URL (예: `https://your-app.netlify.app`)  
 - `GITHUB_WEBHOOK_SECRET` — GitHub Webhook 서명 검증 (선택)  
 - `GITHUB_TOKEN` — 저장소 언어 비율 API 동기화 (선택)  
-- `GROQ_API_KEY` — 커밋 AI 한 줄 요약 (없으면 커밋 메시지 첫 줄 사용)
+- `GROQ_API_KEY` — 커밋 AI 한 줄 요약 ([Groq Console](https://console.groq.com)에서 발급, 없으면 커밋 메시지 첫 줄 사용)
+- `GROQ_MODEL` — 기본 `llama-3.1-8b-instant`
 
 ## 협업 기능 (채팅·Skill-DNA)
 
@@ -60,4 +61,9 @@ npm start              # 기본 포트 3001
 5. PM **완료** 버튼, 채팅에서 작업 선택 후 메시지 전송  
 6. **푸시 알림**: `node scripts/generate-vapid-keys.js` 후 `.env`에 VAPID 키 설정 → 프로필/채팅에서「푸시 알림 켜기」
 
-webhooktest 260523
+### Groq API 설정 (AI 요약)
+
+1. https://console.groq.com 가입 → **API Keys** → Create API Key  
+2. Render `workmate-api` → **Environment** → `GROQ_API_KEY=gsk_...` 추가 → Save → 재배포  
+3. (로컬 확인) `project-management-backend/.env` 에 동일 키 후 `npm run test-groq`  
+4. GitHub push 후 팀 채팅에 **「AI 요약 (Groq)」** 라벨이 보이면 성공

@@ -16,6 +16,7 @@ function formatMessage(doc) {
     taskPageUrl: o.taskPageUrl,
     linkedTask: o.linkedTask,
     githubMeta: o.githubMeta,
+    summaryViaGroq: o.githubMeta?.summaryViaGroq === true,
     reviewCompleted: o.reviewCompleted,
     createdAt: o.createdAt,
   };

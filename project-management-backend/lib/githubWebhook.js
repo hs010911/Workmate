@@ -65,7 +65,10 @@ async function processGithubActivity({
 
   const commits = payload.commits || [];
   const commitMessages = commits.map((c) => c.message).filter(Boolean);
-  const summary = await summarizeCommitMessages(commitMessages, skillDelta);
+      const { summary, viaGroq: summaryViaGroq } = await summarizeCommitMessages(
+        commitMessages,
+        skillDelta,
+      );
   const compareUrl =
     payload.compare ||
     (commits[0] && commits[0].url) ||
@@ -91,14 +94,15 @@ async function processGithubActivity({
     githubUrl: compareUrl,
     taskPageUrl: matchedTask ? taskPageUrl : taskPageUrl,
     linkedTask: matchedTask ? matchedTask._id : null,
-    githubMeta: {
-      repo: repoFull,
-      branch,
-      commitCount: commits.length || 1,
-      pusher,
-      event: eventLabel,
-      matchedTaskTitle: matchedTask ? matchedTask.title : null,
-    },
+        githubMeta: {
+          repo: repoFull,
+          branch,
+          commitCount: commits.length || 1,
+          pusher,
+          event: eventLabel,
+          matchedTaskTitle: matchedTask ? matchedTask.title : null,
+          summaryViaGroq,
+        },
   });
 
   const populated = await ProjectChatMessage.findById(chatMsg._id)

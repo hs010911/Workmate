@@ -1,12 +1,18 @@
 /** @fileoverview 커밋 메시지 AI 한 줄 요약 (Groq, 선택) */
 
+function isGroqConfigured() {
+  return Boolean(process.env.GROQ_API_KEY?.trim());
+}
+
 async function summarizeCommitMessages(messages, skillDelta) {
   const text = (messages || []).filter(Boolean).join("\n").slice(0, 2000);
   const skills = skillDelta ? Object.keys(skillDelta).join(", ") : "";
+
   const fallback = () => {
     const first = messages?.find((m) => m && m.trim());
     const line = first ? first.split("\n")[0].slice(0, 120) : "코드 변경이 반영되었습니다.";
-    return skills ? `${line} (스택: ${skills})` : line;
+    const summary = skills ? `${line} (스택: ${skills})` : line;
+    return { summary, viaGroq: false };
   };
 
   if (!text.trim()) return fallback();
@@ -38,13 +44,19 @@ async function summarizeCommitMessages(messages, skillDelta) {
         temperature: 0.3,
       }),
     });
-    if (!res.ok) return fallback();
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => "");
+      console.warn("[Groq] API 오류", res.status, errBody.slice(0, 300));
+      return fallback();
+    }
     const data = await res.json();
     const line = data.choices?.[0]?.message?.content?.trim();
-    return line || fallback();
-  } catch {
+    if (line) return { summary: line, viaGroq: true };
+    return fallback();
+  } catch (e) {
+    console.warn("[Groq] 요청 실패:", e.message);
     return fallback();
   }
 }
 
-module.exports = { summarizeCommitMessages };
+module.exports = { summarizeCommitMessages, isGroqConfigured };

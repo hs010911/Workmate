@@ -10,7 +10,8 @@
     "create-admin": "node create-admin.js",
     "check-users": "node check-users.js",
     "add-role": "node add-role-field.js",
-    "delete-users": "node delete-users.js"
+    "delete-users": "node delete-users.js",
+    "test-groq": "node scripts/test-groq.js"
   },
   "keywords": [],
   "author": "",
