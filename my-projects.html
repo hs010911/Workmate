@@ -47,10 +47,11 @@
             <!-- 검색 및 필터 -->
             <div class="search-filters">
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="프로젝트 이름으로 검색..." onkeyup="filterProjects()">
+                    <input type="text" id="searchInput" placeholder="프로젝트 이름으로 검색...">
                     <span class="search-icon">🔍</span>
                 </div>
-                <select id="statusFilter" class="form-select" onchange="filterProjects()">
+                <button type="button" id="myProjectsSearchBtn" class="btn-primary">검색</button>
+                <select id="statusFilter" class="form-select">
                     <option value="all">전체 상태</option>
                     <option value="recruiting">모집중</option>
                     <option value="in-progress">진행중</option>
@@ -94,6 +95,8 @@
     <script src="js/main.js"></script>
     <script src="js/nav.js"></script>
     <script src="js/my-projects.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="js/global-chat.js"></script>
     <script src="js/pwa-register.js"></script>
 </body>
 </html>

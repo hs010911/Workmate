@@ -73,6 +73,13 @@ function setupNavigation() {
     }
   }
 
+  const page = window.location.pathname.split("/").pop() || "index.html";
+  if (page === "index.html") {
+    document.querySelectorAll("[data-hide-on-home=\"true\"]").forEach((link) => {
+      link.style.display = "none";
+    });
+  }
+
   document.querySelectorAll("[data-requires-auth=\"true\"]").forEach((link) => {
     if (!user) {
       link.classList.add("disabled-link")

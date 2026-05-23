@@ -41,37 +41,31 @@
             </div>
 
             <!-- Statistics Cards -->
-            <div class="stats-grid">
+            <div class="stats-grid dashboard-stat-number-only">
                 <div class="stat-card">
                     <div class="stat-header">
                         <h3>진행 중인 프로젝트</h3>
-                        <p>현재 참여 중인 프로젝트</p>
                     </div>
                     <div class="stat-content">
                         <div class="stat-number" id="active-projects">0</div>
-                        <p class="stat-label">개의 프로젝트</p>
                     </div>
                 </div>
 
                 <div class="stat-card">
                     <div class="stat-header">
                         <h3>작성한 모집글</h3>
-                        <p>내가 작성한 모집글</p>
                     </div>
                     <div class="stat-content">
                         <div class="stat-number" id="my-posts">0</div>
-                        <p class="stat-label">개의 모집글</p>
                     </div>
                 </div>
 
                 <div class="stat-card">
                     <div class="stat-header">
                         <h3>받은 지원</h3>
-                        <p>모집글에 받은 지원</p>
                     </div>
                     <div class="stat-content">
                         <div class="stat-number" id="applications">0</div>
-                        <p class="stat-label">개의 지원</p>
                     </div>
                 </div>
             </div>
@@ -105,6 +99,8 @@
     <script src="js/main.js"></script>
     <script src="js/nav.js"></script>
     <script src="js/dashboard.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="js/global-chat.js"></script>
     <script src="js/pwa-register.js"></script>
 </body>
 </html>

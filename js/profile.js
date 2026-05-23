@@ -14,18 +14,30 @@ function showTab(tabName, buttonElement) {
     if (buttonElement) buttonElement.classList.add("active");
 }
 
-function updateProfile(event) {
+async function updateProfile(event) {
     event.preventDefault();
-    const nickname = document.getElementById("nickname")?.value;
-    const email = document.getElementById("email")?.value;
-    const phone = document.getElementById("phone")?.value;
-
-    showModal("알림", "프로필 정보가 수정되었습니다.");
+    const nickname = document.getElementById("nickname")?.value?.trim();
+    if (!nickname) {
+        showModal("알림", "닉네임을 입력해주세요.");
+        return;
+    }
+    try {
+        const data = await apiPut("/api/auth/profile", { nickname });
+        if (data.user) {
+            const stored = getCurrentUser() || {};
+            const merged = { ...stored, ...data.user, id: data.user.id || stored.id };
+            sessionStorage.setItem("user", JSON.stringify(merged));
+            const profileName = document.getElementById("profileName");
+            if (profileName) profileName.textContent = merged.nickname || nickname;
+        }
+        showModal("알림", "프로필 정보가 수정되었습니다.");
+    } catch (error) {
+        showError("프로필 수정 실패", error);
+    }
 }
 
 function changePassword(event) {
     event.preventDefault();
-    const currentPassword = document.getElementById("currentPassword")?.value;
     const newPassword = document.getElementById("newPassword")?.value;
     const confirmPassword = document.getElementById("confirmPassword")?.value;
     const errorDiv = document.getElementById("passwordMatchError");
@@ -36,15 +48,9 @@ function changePassword(event) {
         return;
     }
 
-    if (!currentPassword) {
-        if (errorDiv) errorDiv.style.display = "block";
-        return;
-    }
-
-    // 실제 서버에 비밀번호 변경 요청
     (async () => {
         try {
-            await apiPut("/api/auth/password", { currentPassword, newPassword });
+            await apiPut("/api/auth/password", { newPassword });
             showModal("알림", "비밀번호가 변경되었습니다.", () => {
                 event.target.reset();
                 if (errorDiv) errorDiv.style.display = "none";

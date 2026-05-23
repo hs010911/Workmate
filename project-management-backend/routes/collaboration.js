@@ -2,6 +2,7 @@
  * @fileoverview 팀 채팅, GitHub Webhook, Skill-DNA, Web Push API
  */
 const crypto = require("crypto");
+const Application = require("../models/Application");
 const Project = require("../models/Project");
 const Task = require("../models/Task");
 const ProjectChatMessage = require("../models/ProjectChatMessage");
@@ -13,6 +14,39 @@ const { isPushConfigured } = require("../lib/pushNotify");
 
 function registerCollaborationRoutes(app, io, { User, auth }) {
   const publicAppUrl = (process.env.PUBLIC_APP_URL || "").replace(/\/+$/, "");
+
+  /** 참여 중인 프로젝트 목록 (플로팅 채팅용) */
+  app.get("/api/chat/projects", auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const [created, approvedApps] = await Promise.all([
+        Project.find({ creator: userId }).select("title status").sort({ updatedAt: -1 }),
+        Application.find({ applicant: userId, status: "approved" })
+          .populate("project", "title status")
+          .sort({ updatedAt: -1 }),
+      ]);
+
+      const seen = new Set();
+      const projects = [];
+      for (const p of created) {
+        const id = String(p._id);
+        if (seen.has(id)) continue;
+        seen.add(id);
+        projects.push({ id, title: p.title, status: p.status, role: "owner" });
+      }
+      for (const app of approvedApps) {
+        if (!app.project) continue;
+        const id = String(app.project._id);
+        if (seen.has(id)) continue;
+        seen.add(id);
+        projects.push({ id, title: app.project.title, status: app.project.status, role: "member" });
+      }
+      return res.json({ success: true, projects });
+    } catch (e) {
+      console.error(e);
+      return res.status(500).json({ success: false, message: "서버 오류" });
+    }
+  });
 
   app.get("/api/push/vapid-public-key", (_req, res) => {
     const key = process.env.VAPID_PUBLIC_KEY || "";

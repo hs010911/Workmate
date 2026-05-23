@@ -620,7 +620,54 @@ app.get("/api/dashboard/activities", auth, async (req, res) => {
         };
       });
 
-    const activities = [...projectActivities, ...applicationActivities]
+    const myProjectIds = await Project.find({ creator: userId }).distinct("_id");
+    const incomingApplications = myProjectIds.length
+      ? await Application.find({ project: { $in: myProjectIds }, status: "pending" })
+          .populate("project", "title")
+          .sort({ createdAt: -1 })
+          .limit(10)
+      : [];
+
+    const recruitActivities = incomingApplications
+      .filter((app) => app.project)
+      .map((app) => ({
+        type: "new_application",
+        createdAt: app.createdAt,
+        isNew: isRecent(app.createdAt),
+        message: `모집글에 새로운 지원이 있습니다 — "${app.project.title}"`,
+      }));
+
+    const approvedParticipantIds = (
+      await Application.find({ applicant: userId, status: "approved" }).select("project")
+    )
+      .map((a) => a.project)
+      .filter(Boolean);
+
+    const statusProjects = await Project.find({
+      $or: [{ creator: userId }, { _id: { $in: approvedParticipantIds } }],
+      status: { $in: ["in-progress", "completed"] },
+    })
+      .sort({ updatedAt: -1 })
+      .limit(10);
+
+    const statusActivities = statusProjects.map((project) => {
+      const started = project.status === "in-progress";
+      return {
+        type: started ? "project_started" : "project_completed",
+        createdAt: project.updatedAt || project.createdAt,
+        isNew: isRecent(project.updatedAt || project.createdAt),
+        message: started
+          ? `프로젝트가 시작되었습니다 — "${project.title}"`
+          : `프로젝트가 완료됐습니다 — "${project.title}"`,
+      };
+    });
+
+    const activities = [
+      ...projectActivities,
+      ...applicationActivities,
+      ...recruitActivities,
+      ...statusActivities,
+    ]
       .sort((a, b) => b.createdAt - a.createdAt)
       .slice(0, 10)
       .map(({ createdAt, ...rest }) => rest); // createdAt은 정렬용이므로 응답에서는 제외
@@ -681,6 +728,42 @@ app.get("/api/my-projects", auth, async (req, res) => {
 // ==================== 인증 API ====================
 
 /**
+ * 아이디 중복 확인
+ * @route GET /api/auth/check-username?username=
+ */
+app.get("/api/auth/check-username", async (req, res) => {
+  try {
+    const username = String(req.query.username || "").trim();
+    if (!username) {
+      return res.json({ success: true, available: false, message: "아이디를 입력해주세요" });
+    }
+    const existed = await User.findOne({ username });
+    return res.json({ success: true, available: !existed });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ success: false, message: "서버 오류" });
+  }
+});
+
+/**
+ * 닉네임 중복 확인
+ * @route GET /api/auth/check-nickname?nickname=
+ */
+app.get("/api/auth/check-nickname", async (req, res) => {
+  try {
+    const nickname = String(req.query.nickname || "").trim();
+    if (!nickname) {
+      return res.json({ success: true, available: false, message: "닉네임을 입력해주세요" });
+    }
+    const existed = await User.findOne({ nickname });
+    return res.json({ success: true, available: !existed });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ success: false, message: "서버 오류" });
+  }
+});
+
+/**
  * 회원가입
  * @route POST /api/auth/register
  * @body {string} username - 아이디
@@ -688,11 +771,12 @@ app.get("/api/my-projects", auth, async (req, res) => {
  * @body {string} nickname - 닉네임
  * @body {string} name - 이름
  * @body {string} phone - 전화번호
+ * @body {string} email - 이메일
  */
 app.post("/api/auth/register", async (req, res) => {
   try {
-    const { username, name, nickname, phone, password } = req.body;
-    if (!username || !password || !nickname) {
+    const { username, name, nickname, phone, password, email } = req.body;
+    if (!username || !password || !nickname || !email) {
       return res.status(400).json({ success: false, message: "필수 값 누락" });
     }
     
@@ -701,18 +785,40 @@ app.post("/api/auth/register", async (req, res) => {
       return res.status(400).json({ success: false, message: "비밀번호는 최소 6자 이상이어야 합니다" });
     }
     
-    // 아이디 중복 확인
     const existed = await User.findOne({ username });
     if (existed) {
       return res.status(400).json({ success: false, message: "이미 존재하는 아이디입니다" });
     }
+
+    const nickTaken = await User.findOne({ nickname });
+    if (nickTaken) {
+      return res.status(400).json({ success: false, message: "이미 사용중인 닉네임입니다" });
+    }
+
+    const emailTaken = await User.findOne({ email: String(email).trim().toLowerCase() });
+    if (emailTaken) {
+      return res.status(400).json({ success: false, message: "이미 사용중인 이메일입니다" });
+    }
     
-    // 비밀번호 해싱
     const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ username, name, nickname, phone, password: hashed });
+    const user = await User.create({
+      username,
+      name,
+      nickname,
+      phone,
+      email: String(email).trim().toLowerCase(),
+      password: hashed,
+    });
     return res.json({
       success: true,
-      user: { id: user._id, username: user.username, nickname: user.nickname, name: user.name, phone: user.phone },
+      user: {
+        id: user._id,
+        username: user.username,
+        nickname: user.nickname,
+        name: user.name,
+        phone: user.phone,
+        email: user.email,
+      },
     });
   } catch (e) {
     console.error(e);
@@ -737,10 +843,22 @@ app.post("/api/auth/login", async (req, res) => {
     }
     
     const user = await User.findOne({ username });
-    if (!user) return res.status(400).json({ success: false, message: "아이디 또는 비밀번호가 올바르지 않습니다" });
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "ID를 확인해주세요",
+        errorField: "username",
+      });
+    }
 
     const ok = await bcrypt.compare(password, user.password);
-    if (!ok) return res.status(400).json({ success: false, message: "아이디 또는 비밀번호가 올바르지 않습니다" });
+    if (!ok) {
+      return res.status(400).json({
+        success: false,
+        message: "비밀번호를 확인해주세요",
+        errorField: "password",
+      });
+    }
 
     // 3개월 이상 미접속 계정 자동 정지
     if (user.lastActivityAt) {
@@ -775,6 +893,7 @@ app.post("/api/auth/login", async (req, res) => {
         nickname: user.nickname, 
         name: user.name, 
         phone: user.phone,
+        email: user.email,
         role: user.role || "user",
         status: user.status || "active"
       },
@@ -848,17 +967,49 @@ app.delete("/api/auth/account", auth, async (req, res) => {
 });
 
 /**
- * 비밀번호 변경
+ * 프로필 수정 (닉네임)
+ * @route PUT /api/auth/profile
+ */
+app.put("/api/auth/profile", auth, async (req, res) => {
+  try {
+    const nickname = String(req.body?.nickname || "").trim();
+    if (!nickname) {
+      return res.status(400).json({ success: false, message: "닉네임을 입력해주세요" });
+    }
+    const taken = await User.findOne({ nickname, _id: { $ne: req.user.id } });
+    if (taken) {
+      return res.status(400).json({ success: false, message: "이미 사용중인 닉네임입니다" });
+    }
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, message: "사용자를 찾을 수 없습니다" });
+    user.nickname = nickname;
+    await user.save();
+    return res.json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        nickname: user.nickname,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ success: false, message: "서버 오류" });
+  }
+});
+
+/**
+ * 비밀번호 변경 (기획서: 현재 비밀번호 필드 없음)
  * @route PUT /api/auth/password
- * @requires auth
- * @body {string} currentPassword - 현재 비밀번호
- * @body {string} newPassword - 새 비밀번호
  */
 app.put("/api/auth/password", auth, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body || {};
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({ success: false, message: "현재 비밀번호와 새 비밀번호를 입력해주세요" });
+    if (!newPassword) {
+      return res.status(400).json({ success: false, message: "새 비밀번호를 입력해주세요" });
     }
     if (String(newPassword).length < 6) {
       return res.status(400).json({ success: false, message: "비밀번호는 최소 6자 이상이어야 합니다" });
@@ -869,9 +1020,11 @@ app.put("/api/auth/password", auth, async (req, res) => {
       return res.status(404).json({ success: false, message: "사용자를 찾을 수 없습니다" });
     }
 
-    const ok = await bcrypt.compare(String(currentPassword), user.password);
-    if (!ok) {
-      return res.status(400).json({ success: false, message: "현재 비밀번호가 올바르지 않습니다" });
+    if (currentPassword) {
+      const ok = await bcrypt.compare(String(currentPassword), user.password);
+      if (!ok) {
+        return res.status(400).json({ success: false, message: "현재 비밀번호가 올바르지 않습니다" });
+      }
     }
 
     user.password = await bcrypt.hash(String(newPassword), 10);

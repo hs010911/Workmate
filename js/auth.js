@@ -6,6 +6,13 @@ let phoneVerified = false;
 /** true면 회원가입에서 휴대폰 인증 UI를 숨기고 인증 없이 제출 가능 */
 const testMode = true;
 
+const registerState = {
+    usernameOk: false,
+    nicknameOk: false,
+    passwordOk: false,
+    confirmOk: false,
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
@@ -19,8 +26,133 @@ document.addEventListener("DOMContentLoaded", () => {
         setupPhoneVerification();
         setupPasswordToggle("password", "passwordToggle");
         setupPasswordToggle("confirmPassword", "confirmPasswordToggle");
+        setupRegisterValidation();
     }
 });
+
+function setFieldHint(el, message, type) {
+    if (!el) return;
+    el.textContent = message || "";
+    el.className = `form-hint form-hint--${type || "ok"}`;
+    el.style.display = message ? "block" : "none";
+}
+
+function setupRegisterValidation() {
+    const submitBtn = document.getElementById("submitBtn");
+    const usernameInput = document.getElementById("username");
+    const nicknameInput = document.getElementById("nickname");
+    const passwordInput = document.getElementById("password");
+    const confirmInput = document.getElementById("confirmPassword");
+    const emailInput = document.getElementById("email");
+
+    const usernameHint = document.getElementById("usernameHint");
+    const nicknameHint = document.getElementById("nicknameHint");
+    const confirmHint = document.getElementById("confirmPasswordHint");
+
+    let usernameTimer;
+    let nicknameTimer;
+
+    function refreshSubmit() {
+        const emailOk = emailInput?.value?.trim().includes("@");
+        const nameOk = !!document.getElementById("name")?.value?.trim();
+        const ready =
+            registerState.usernameOk &&
+            registerState.nicknameOk &&
+            registerState.passwordOk &&
+            registerState.confirmOk &&
+            emailOk &&
+            nameOk;
+        if (submitBtn) submitBtn.disabled = !ready;
+    }
+
+    if (usernameInput) {
+        usernameInput.addEventListener("input", () => {
+            registerState.usernameOk = false;
+            refreshSubmit();
+            clearTimeout(usernameTimer);
+            const v = usernameInput.value.trim();
+            if (v.length < 2) {
+                setFieldHint(usernameHint, "", "error");
+                return;
+            }
+            usernameTimer = setTimeout(async () => {
+                try {
+                    const res = await fetch(
+                        `${window.apiBase}/api/auth/check-username?username=${encodeURIComponent(v)}`,
+                    );
+                    const data = await res.json();
+                    registerState.usernameOk = !!data.available;
+                    setFieldHint(
+                        usernameHint,
+                        data.available ? "사용가능한 ID입니다." : "이미 사용중인 ID입니다.",
+                        data.available ? "ok" : "error",
+                    );
+                    refreshSubmit();
+                } catch {
+                    setFieldHint(usernameHint, "", "error");
+                }
+            }, 400);
+        });
+    }
+
+    if (nicknameInput) {
+        nicknameInput.addEventListener("input", () => {
+            registerState.nicknameOk = false;
+            refreshSubmit();
+            clearTimeout(nicknameTimer);
+            const v = nicknameInput.value.trim();
+            if (v.length < 2) {
+                setFieldHint(nicknameHint, "", "error");
+                return;
+            }
+            nicknameTimer = setTimeout(async () => {
+                try {
+                    const res = await fetch(
+                        `${window.apiBase}/api/auth/check-nickname?nickname=${encodeURIComponent(v)}`,
+                    );
+                    const data = await res.json();
+                    registerState.nicknameOk = !!data.available;
+                    setFieldHint(
+                        nicknameHint,
+                        data.available ? "사용가능한 닉네임입니다." : "이미 사용중인 닉네임입니다.",
+                        data.available ? "ok" : "error",
+                    );
+                    refreshSubmit();
+                } catch {
+                    setFieldHint(nicknameHint, "", "error");
+                }
+            }, 400);
+        });
+    }
+
+    if (passwordInput) {
+        passwordInput.addEventListener("input", () => {
+            registerState.passwordOk = passwordInput.value.length >= 6;
+            refreshSubmit();
+        });
+    }
+
+    if (confirmInput) {
+        confirmInput.addEventListener("input", () => {
+            const match = confirmInput.value === passwordInput?.value;
+            registerState.confirmOk = match && confirmInput.value.length >= 6;
+            setFieldHint(
+                confirmHint,
+                confirmInput.value && !match ? "비밀번호가 일치하지 않습니다" : "",
+                "error",
+            );
+            refreshSubmit();
+        });
+    }
+
+    if (emailInput) {
+        emailInput.addEventListener("input", refreshSubmit);
+    }
+    const nameInput = document.getElementById("name");
+    if (nameInput) nameInput.addEventListener("input", refreshSubmit);
+
+    if (submitBtn) submitBtn.disabled = true;
+}
 
 // 비밀번호 표시/숨기기 토글 설정
 function setupPasswordToggle(inputId, buttonId) {
@@ -68,27 +200,23 @@ async function handleLogin(event) {
         const data = await res.json();
         if (!res.ok || !data.success) {
             const errorMsg = data.message || "로그인 실패";
-            const unifiedCred =
-                errorMsg.includes("아이디 또는 비밀번호") ||
-                errorMsg.includes("올바르지 않습니다") ||
-                (errorMsg.includes("아이디") && errorMsg.includes("비밀번호"));
-            if (unifiedCred) {
+            if (data.errorField === "username" || errorMsg.includes("ID를 확인")) {
                 if (usernameError) {
-                    usernameError.textContent = "ID,PW를 확인해주세요";
+                    usernameError.textContent = "ID를 확인해주세요";
                     usernameError.style.display = "block";
                 }
+                if (passwordError) passwordError.style.display = "none";
                 return;
             }
-            if (errorMsg.includes("비밀번호") || errorMsg.includes("password")) {
-                if (passwordError) passwordError.style.display = "block";
-            } else if (errorMsg.includes("아이디") || errorMsg.includes("ID")) {
-                if (usernameError) {
-                    usernameError.textContent = "ID,PW를 확인해주세요";
-                    usernameError.style.display = "block";
+            if (data.errorField === "password" || errorMsg.includes("비밀번호를 확인")) {
+                if (passwordError) {
+                    passwordError.textContent = "비밀번호를 확인해주세요";
+                    passwordError.style.display = "block";
                 }
-            } else {
-                showNotification(errorMsg, "error");
+                if (usernameError) usernameError.style.display = "none";
+                return;
             }
+            showNotification(errorMsg, "error");
             return;
         }
 
@@ -122,6 +250,7 @@ async function handleRegister(event) {
         username: formData.get("username"),
         name: formData.get("name"),
         nickname: formData.get("nickname"),
+        email: formData.get("email"),
         phone: formData.get("phone"),
         password: formData.get("password"),
         confirmPassword: formData.get("confirmPassword"),
@@ -164,8 +293,8 @@ async function handleRegister(event) {
             throw new Error(data.message || "회원가입 실패");
         }
 
-        showNotification("회원가입이 완료되었습니다!");
-        window.location.href = "login.html";
+        showNotification("회원가입에 성공했습니다");
+        window.location.href = "index.html";
     } catch (error) {
         console.error("회원가입 실패:", error);
         const hint = error.message.includes("Failed to fetch")

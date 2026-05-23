@@ -72,6 +72,22 @@ function renderSkillBadges(badges) {
     .join("");
 }
 
+function renderProfileHeaderBadges(badges, languages) {
+  const el = document.getElementById("profileHeaderBadges");
+  if (!el) return;
+  const fromBadges = (badges || []).map((b) => b.label || b.id).filter(Boolean);
+  const fromLangs = Object.entries(languages || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([k]) => k);
+  const labels = [...new Set([...fromBadges, ...fromLangs])].slice(0, 8);
+  if (!labels.length) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = labels.map((l) => `<span class="skill-dna-badge">${escapeHtml(l)}</span>`).join("");
+}
+
 async function loadSkillDna(userId) {
   if (!userId) return;
   try {
@@ -80,6 +96,7 @@ async function loadSkillDna(userId) {
     const d = data.skillDna || {};
     renderSkillDnaChart(d.languages);
     renderSkillBadges(d.badges);
+    renderProfileHeaderBadges(d.badges, d.languages);
     const ghInput = document.getElementById("githubUsername");
     if (ghInput && d.githubUsername) ghInput.value = d.githubUsername;
   } catch (e) {

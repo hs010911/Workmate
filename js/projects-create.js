@@ -15,6 +15,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     form.addEventListener("submit", handleFormSubmit);
 
+    const cancelBtn = document.getElementById("projectCreateCancelBtn");
+    if (cancelBtn) {
+        cancelBtn.addEventListener("click", () => {
+            showConfirmModal(
+                "프로젝트 등록 취소",
+                "정말 프로젝트 등록을 취소하시겠습니까?",
+                () => {
+                    window.location.href = "projects.html";
+                },
+            );
+        });
+    }
+
     const deadlineInput = document.getElementById("deadline");
     if (deadlineInput) {
         // 오늘은 바로 기간 만료가 되어 선택 불가하도록 내일로 설정
@@ -50,7 +63,7 @@ async function handleFormSubmit(e) {
 
     try {
         await apiPost("/api/projects", projectData);
-        showModal("알림", "프로젝트가 성공적으로 등록되었습니다!", () => {
+        showModal("알림", "프로젝트가 등록되었습니다.", () => {
             window.location.href = "projects.html";
         });
     } catch (error) {

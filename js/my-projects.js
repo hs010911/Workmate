@@ -14,6 +14,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     loadMyProjects();
+
+    const searchBtn = document.getElementById("myProjectsSearchBtn");
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    if (searchBtn) searchBtn.addEventListener("click", filterProjects);
+    if (searchInput) {
+        searchInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") filterProjects();
+        });
+    }
+    if (statusFilter) statusFilter.addEventListener("change", filterProjects);
 });
 
 // 내 프로젝트 목록 로드
