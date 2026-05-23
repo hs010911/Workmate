@@ -3,15 +3,18 @@
  * 사용자/관리자/공개 API 라우트를 한 파일에 정의(모델은 models/ 사용).
  */
 
+const http = require("http");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const { Server } = require("socket.io");
 require("dotenv").config();
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 3001;
 const Project = require("./models/Project");
 const auth = require("./middleware/auth");
@@ -38,7 +41,15 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, _res, buf) => {
+      if (req.originalUrl && req.originalUrl.includes("/api/github/webhook")) {
+        req.rawBody = buf;
+      }
+    },
+  }),
+);
 
 const rootDir = path.join(__dirname, "..");
 app.use(express.static(rootDir));
@@ -65,6 +76,25 @@ const userSchema = new mongoose.Schema({
     {
       user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
       blockedAt: { type: Date, default: Date.now },
+    },
+  ],
+  githubUsername: { type: String, trim: true, default: "" },
+  skillLanguages: { type: mongoose.Schema.Types.Mixed, default: {} },
+  skillBadges: [
+    {
+      id: String,
+      label: String,
+      earnedAt: { type: Date, default: Date.now },
+    },
+  ],
+  pushSubscriptions: [
+    {
+      endpoint: String,
+      keys: {
+        p256dh: String,
+        auth: String,
+      },
+      createdAt: { type: Date, default: Date.now },
     },
   ],
 }, { timestamps: true });
@@ -778,6 +808,9 @@ app.get("/api/auth/me", auth, async (req, res) => {
         role: user.role || "user",
         status: user.status || "active",
         adminPermission: user.adminPermission || undefined,
+        githubUsername: user.githubUsername || "",
+        skillLanguages: user.skillLanguages || {},
+        skillBadges: user.skillBadges || [],
       },
     });
   } catch (e) {
@@ -966,7 +999,14 @@ app.get("/api/projects/:id/tasks", auth, async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
     if (!project) return res.status(404).json({ success: false, message: "프로젝트를 찾을 수 없습니다" });
-    if (String(project.creator) !== String(req.user.id)) {
+
+    const isCreator = String(project.creator) === String(req.user.id);
+    const approved = await Application.findOne({
+      project: project._id,
+      applicant: req.user.id,
+      status: "approved",
+    });
+    if (!isCreator && !approved) {
       return res.status(403).json({ success: false, message: "권한이 없습니다" });
     }
 
@@ -2062,6 +2102,39 @@ app.get("/api/support/:id", auth, async (req, res) => {
   }
 });
 
+// ==================== 협업 (채팅·GitHub·Skill-DNA) ====================
+
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins.length ? allowedOrigins : true,
+    credentials: true,
+  },
+});
+
+io.use((socket, next) => {
+  const token = socket.handshake.auth?.token;
+  if (!token) return next(new Error("인증 필요"));
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    socket.userId = decoded.id;
+    next();
+  } catch {
+    next(new Error("유효하지 않은 토큰"));
+  }
+});
+
+io.on("connection", (socket) => {
+  socket.on("project:join", (projectId) => {
+    if (projectId) socket.join(`project:${projectId}`);
+  });
+  socket.on("project:leave", (projectId) => {
+    if (projectId) socket.leave(`project:${projectId}`);
+  });
+});
+
+const { registerCollaborationRoutes } = require("./routes/collaboration");
+registerCollaborationRoutes(app, io, { User, auth });
+
 // ==================== 에러 핸들러 ====================
 
 /**
@@ -2078,8 +2151,8 @@ app.use((req, res) => {
  * 서버 시작
  * 모든 네트워크 인터페이스(0.0.0.0)에서 접속 가능하도록 바인딩
  */
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`서버가 포트 ${PORT}에서 실행 중입니다.`);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`서버가 포트 ${PORT}에서 실행 중입니다. (Socket.io 활성)`);
   console.log(`로컬 접속: http://localhost:${PORT}`);
   console.log(`네트워크 접속: http://[서버IP]:${PORT}`);
   

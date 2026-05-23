@@ -1,4 +1,4 @@
-const CACHE = "workmate-pwa-v7";
+const CACHE = "workmate-pwa-v8";
 
 const PRECACHE_URLS = [
   "/index.html",
@@ -56,5 +56,35 @@ self.addEventListener("fetch", (event) => {
         return response;
       })
       .catch(() => caches.match(request))
+  );
+});
+
+self.addEventListener("push", (event) => {
+  let data = { title: "WorkMate", body: "새 알림이 있습니다.", url: "/index.html" };
+  try {
+    if (event.data) data = { ...data, ...event.data.json() };
+  } catch {
+    /* ignore */
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || "WorkMate", {
+      body: data.body || "",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      data: { url: data.url || "/index.html" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/index.html";
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if (c.url.includes(url) && "focus" in c) return c.focus();
+      }
+      if (clients.openWindow) return clients.openWindow(url);
+    }),
   );
 });

@@ -25,6 +25,8 @@ const projectSchema = new mongoose.Schema(
     },
     // 관리자 게시글 게재/게재중지 상태
     isPublished: { type: Boolean, default: true },
+    /** GitHub 저장소 (owner/repo) — Webhook·채팅 연동 */
+    githubRepoFullName: { type: String, trim: true, default: "" },
   },
   { timestamps: true },
 );

@@ -123,6 +123,13 @@ async function loadProjectDetail(projectId) {
         isOwner = currentUser && String(currentUser.id) === String(project.recruiterId);
         const isParticipant = currentUser && project.applicationStatus === "approved";
 
+        window.collaborationContext = {
+            projectId: project.id,
+            isOwner: !!isOwner,
+            isParticipant: !!isParticipant,
+            status: project.status,
+        };
+
         renderProjectDetail(project);
         if (isOwner) {
             document.getElementById("applicantsSection").style.display = "block";
@@ -132,9 +139,18 @@ async function loadProjectDetail(projectId) {
         }
         
         const tabTasksBtn = document.getElementById("tabTasksBtn");
-        if ((isOwner || isParticipant) && (project.status === "in-progress" || project.status === "completed")) {
+        const tabChatBtn = document.getElementById("tabChatBtn");
+        const showCollab =
+            (isOwner || isParticipant) &&
+            (project.status === "in-progress" || project.status === "completed");
+        if (showCollab) {
             if (tabTasksBtn) {
                 tabTasksBtn.style.display = "block";
+            }
+            if (tabChatBtn) {
+                tabChatBtn.style.display = "block";
+            }
+            if (tabTasksBtn) {
                 try {
                     await loadParticipants(project.id);
                     await loadTasks(project.id);
@@ -152,9 +168,15 @@ async function loadProjectDetail(projectId) {
                 }
             }
         } else {
-            if (tabTasksBtn) {
-                tabTasksBtn.style.display = "none";
-            }
+            if (tabTasksBtn) tabTasksBtn.style.display = "none";
+            if (tabChatBtn) tabChatBtn.style.display = "none";
+        }
+
+        const tabParam = new URLSearchParams(window.location.search).get("tab");
+        if (tabParam === "chat" && showCollab) {
+            switchTab("chat");
+        } else if (tabParam === "tasks" && showCollab) {
+            switchTab("tasks");
         }
     } catch (error) {
         console.error("프로젝트 로드 실패:", error);
@@ -752,6 +774,17 @@ function switchTab(tabName) {
                         console.error("작업 관리 데이터 로드 실패:", error);
                     }
                 })();
+            }
+        }
+    } else if (tabName === "chat") {
+        const chatBtn = document.getElementById("tabChatBtn");
+        const chatTab = document.getElementById("tabChat");
+        if (chatBtn) chatBtn.classList.add("active");
+        if (chatTab) {
+            chatTab.classList.add("active");
+            chatTab.style.display = "block";
+            if (currentProject && typeof initProjectChat === "function") {
+                initProjectChat(currentProject.id);
             }
         }
     }

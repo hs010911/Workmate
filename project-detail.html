@@ -40,6 +40,7 @@
             <div class="detail-tabs" id="detailTabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e5e7eb;">
                 <button class="detail-tab-btn active" onclick="switchTab('info')" id="tabInfoBtn">프로젝트 정보</button>
                 <button class="detail-tab-btn" onclick="switchTab('tasks')" id="tabTasksBtn" style="display: none;">작업 관리</button>
+                <button class="detail-tab-btn" onclick="switchTab('chat')" id="tabChatBtn" style="display: none;">팀 채팅</button>
             </div>
 
             <!-- 프로젝트 정보 탭 -->
@@ -179,15 +180,41 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 팀 채팅 탭 (GitHub 알림 + 실시간) -->
+            <div id="tabChat" class="tab-content tab-chat-panel" style="display: none;">
+                <div class="chat-github-setup" id="chatGithubSetup" style="display: none;">
+                    <label class="task-chart-label">
+                        <span>연결 GitHub 저장소</span>
+                        <input type="text" id="projectGithubRepo" class="form-input" placeholder="owner/repo">
+                    </label>
+                    <button type="button" class="btn-primary" onclick="saveProjectGithubRepo()">저장</button>
+                    <p class="chat-hint">GitHub Webhook URL: <code id="webhookUrlHint">—</code> (이벤트: push, pull_request)</p>
+                </div>
+                <div class="chat-toolbar">
+                    <button type="button" class="btn-secondary btn-sm" id="enablePushBtn" onclick="enableProjectPush()">푸시 알림 켜기</button>
+                </div>
+                <div id="projectChatMessages" class="project-chat-messages" aria-live="polite"></div>
+                <form class="project-chat-form" onsubmit="sendProjectChatMessage(event)">
+                    <select id="projectChatTaskSelect" class="form-input chat-task-select" aria-label="연결할 작업">
+                        <option value="">작업 연결 (선택)</option>
+                    </select>
+                    <input type="text" id="projectChatInput" class="form-input" placeholder="메시지 입력..." autocomplete="off">
+                    <button type="submit" class="btn-primary">전송</button>
+                </form>
+            </div>
         </div>
     </main>
 
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="js/config.js?v=2"></script>
     <script src="js/utils.js?v=2"></script>
     <script src="js/api.js?v=2"></script>
     <script src="js/main.js?v=2"></script>
     <script src="js/nav.js?v=2"></script>
-    <script src="js/project-detail.js?v=4"></script>
+    <script src="js/push-notifications.js"></script>
+    <script src="js/project-chat.js"></script>
+    <script src="js/project-detail.js?v=5"></script>
     <script src="js/pwa-register.js"></script>
 </body>
 </html>

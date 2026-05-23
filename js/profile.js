@@ -212,6 +212,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     await loadBlockedUsers();
+
+    if (typeof loadSkillDna === "function") {
+        await loadSkillDna(user.id);
+    }
 });
 
 /**

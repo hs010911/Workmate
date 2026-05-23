@@ -48,6 +48,7 @@
             <!-- 탭 메뉴 -->
             <div class="profile-tabs">
                 <button class="tab-button active" onclick="showTab('overview', this)">개요</button>
+                <button class="tab-button" onclick="showTab('skillDna', this)">Skill-DNA</button>
                 <button class="tab-button" onclick="showTab('blocked', this)">차단한 사용자</button>
                 <button class="tab-button" onclick="showTab('settings', this)">프로필 수정</button>
             </div>
@@ -68,6 +69,19 @@
                         <div class="stat-label">완료한 프로젝트</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Skill-DNA (검증 포트폴리오) -->
+            <div id="skillDna" class="tab-content">
+                <section class="skill-dna-section">
+                    <h3>검증 기반 역량 그래프</h3>
+                    <p class="skill-dna-desc">GitHub 협업·푸시 데이터로 자동 갱신되는 스택입니다. 수기 입력이 아닌 실제 기여를 반영합니다.</p>
+                    <div class="skill-dna-chart-wrap">
+                        <canvas id="skillDnaChart" height="280"></canvas>
+                    </div>
+                    <div id="skillDnaBadges" class="skill-dna-badges"></div>
+                    <p id="skillDnaEmpty" class="skill-dna-empty" style="display: none;">아직 수집된 스택 데이터가 없습니다. GitHub 사용자명을 연결하고 프로젝트에서 푸시해 보세요.</p>
+                </section>
             </div>
 
             <!-- 차단한 사용자 탭 -->
@@ -98,6 +112,22 @@
                         </div>
                         <button type="submit" class="btn-primary">정보 수정</button>
                     </form>
+                </div>
+
+                <div class="settings-section">
+                    <h3>GitHub 연동 (Skill-DNA)</h3>
+                    <p class="skill-dna-desc">GitHub 사용자명과 동일하게 입력하면 푸시 시 채팅·역량 그래프가 자동 반영됩니다.</p>
+                    <div class="form-group">
+                        <label for="githubUsername" class="form-label">GitHub 사용자명</label>
+                        <input type="text" id="githubUsername" class="form-input" placeholder="예: octocat">
+                    </div>
+                    <div class="form-group">
+                        <label for="githubSyncRepo" class="form-label">대표 저장소 (owner/repo, 선택)</label>
+                        <input type="text" id="githubSyncRepo" class="form-input" placeholder="예: octocat/Hello-World">
+                    </div>
+                    <button type="button" class="btn-primary" id="saveGithubBtn" onclick="saveGithubLink()">GitHub 연동 저장</button>
+                    <button type="button" class="btn-secondary" style="margin-left: 0.5rem;" onclick="enableProjectPush()">푸시 알림 등록</button>
+                    <p class="skill-dna-desc" style="margin-top: 0.75rem;">저장소를 비우면 GitHub에 등록된 최근 공개 저장소 언어 비율을 자동으로 가져옵니다.</p>
                 </div>
 
                 <div class="settings-section">
@@ -136,6 +166,9 @@
     <script src="js/api.js"></script>
     <script src="js/main.js"></script>
     <script src="js/nav.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="js/push-notifications.js"></script>
+    <script src="js/skill-dna.js"></script>
     <script src="js/profile.js"></script>
     <script src="js/pwa-register.js"></script>
 </body>

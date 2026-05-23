@@ -45,4 +45,17 @@ npm start              # 기본 포트 3001
 - `MONGODB_URI` — MongoDB 연결 문자열  
 - `JWT_SECRET` — JWT 서명  
 - `PORT` — API 포트 (기본 3001)  
-- `CORS_ORIGIN` — 프로덕션 시 허용 오리진
+- `CORS_ORIGIN` — 프로덕션 시 허용 오리진  
+- `PUBLIC_APP_URL` — 채팅·Webhook 링크용 프론트 URL (예: `https://your-app.netlify.app`)  
+- `GITHUB_WEBHOOK_SECRET` — GitHub Webhook 서명 검증 (선택)  
+- `GITHUB_TOKEN` — 저장소 언어 비율 API 동기화 (선택)  
+- `GROQ_API_KEY` — 커밋 AI 한 줄 요약 (없으면 커밋 메시지 첫 줄 사용)
+
+## 협업 기능 (채팅·Skill-DNA)
+
+1. 프로필 → **GitHub 연동**에 GitHub 사용자명 저장 (저장소 비우면 최근 공개 repo 언어 자동 동기화)  
+2. 프로젝트 상세 → **팀 채팅** → 소유자가 `owner/repo` 저장 (언어 비율 자동 동기화)  
+3. GitHub Webhook: `{API}/api/github/webhook`, 이벤트 **push**, **pull_request** (병합)  
+4. 푸시/병합 → 채팅·AI 요약·작업 자동 매칭·Skill-DNA(2주 상위 10% 배지)  
+5. PM **완료** 버튼, 채팅에서 작업 선택 후 메시지 전송  
+6. **푸시 알림**: `node scripts/generate-vapid-keys.js` 후 `.env`에 VAPID 키 설정 → 프로필/채팅에서「푸시 알림 켜기」
