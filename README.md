@@ -67,3 +67,5 @@ npm start              # 기본 포트 3001
 2. Render `workmate-api` → **Environment** → `GROQ_API_KEY=gsk_...` 추가 → Save → 재배포  
 3. (로컬 확인) `project-management-backend/.env` 에 동일 키 후 `npm run test-groq`  
 4. GitHub push 후 팀 채팅에 **「AI 요약 (Groq)」** 라벨이 보이면 성공
+
+webhook test2
