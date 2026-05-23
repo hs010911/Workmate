@@ -25,7 +25,8 @@ function renderChatMessage(msg, isOwner) {
   html += `<p class="chat-message-body">${escapeHtml(msg.body)}</p>`;
 
   if (msg.summary) {
-    const summaryLabel = msg.summaryViaGroq ? "AI 요약 (Groq)" : "요약";
+    let summaryLabel = msg.summaryViaGroq ? "AI 요약 (Groq)" : "요약";
+    if (msg.summaryViaGroq && msg.summaryUsedDiff) summaryLabel = "AI 요약 (Groq · diff 반영)";
     html += `<p class="chat-message-summary">${summaryLabel}: ${escapeHtml(msg.summary)}</p>`;
   }
 

@@ -9,7 +9,7 @@ function normalize(s) {
     .trim();
 }
 
-function matchTaskFromGithubPayload(tasks, payload) {
+function matchTaskFromGithubPayload(tasks, payload, diffExcerpt) {
   if (!tasks?.length || !payload) return null;
 
   const commits = payload.commits || [];
@@ -19,6 +19,9 @@ function matchTaskFromGithubPayload(tasks, payload) {
     for (const p of [...(c.added || []), ...(c.modified || [])]) {
       haystacks.push(normalize(p));
     }
+  }
+  if (diffExcerpt) {
+    haystacks.push(normalize(diffExcerpt.slice(0, 4000)));
   }
 
   const branch = (payload.ref || "").replace("refs/heads/", "");

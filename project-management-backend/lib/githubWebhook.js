@@ -11,6 +11,7 @@ const {
   recordSkillContributions,
 } = require("./githubSkills");
 const { summarizeCommitMessages } = require("./aiSummary");
+const { fetchPushDiff, fetchMergeDiff } = require("./githubDiff");
 const { matchTaskFromGithubPayload } = require("./taskMatcher");
 const { sendPushToUser } = require("./pushNotify");
 const { formatMessage } = require("./chatMessageFormat");
@@ -60,15 +61,27 @@ async function processGithubActivity({
     await user.save();
   }
 
-  const tasks = await Task.find({ project: project._id }).select("title status _id");
-  const matchedTask = matchTaskFromGithubPayload(tasks, payload);
-
   const commits = payload.commits || [];
   const commitMessages = commits.map((c) => c.message).filter(Boolean);
-      const { summary, viaGroq: summaryViaGroq } = await summarizeCommitMessages(
-        commitMessages,
-        skillDelta,
-      );
+
+  let diffExcerpt = "";
+  try {
+    diffExcerpt =
+      eventLabel === "merge"
+        ? await fetchMergeDiff(repoFull, payload)
+        : await fetchPushDiff(repoFull, payload);
+  } catch (e) {
+    console.warn("[GitHub Diff] 조회 실패:", e.message);
+  }
+
+  const tasks = await Task.find({ project: project._id }).select("title status _id");
+  const matchedTask = matchTaskFromGithubPayload(tasks, payload, diffExcerpt);
+
+  const { summary, viaGroq: summaryViaGroq, usedDiff } = await summarizeCommitMessages(
+    commitMessages,
+    skillDelta,
+    diffExcerpt,
+  );
   const compareUrl =
     payload.compare ||
     (commits[0] && commits[0].url) ||
@@ -102,6 +115,7 @@ async function processGithubActivity({
           event: eventLabel,
           matchedTaskTitle: matchedTask ? matchedTask.title : null,
           summaryViaGroq,
+          summaryUsedDiff: usedDiff,
         },
   });
 

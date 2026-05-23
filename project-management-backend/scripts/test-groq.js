@@ -14,15 +14,23 @@ async function main() {
   console.log("모델:", process.env.GROQ_MODEL || "llama-3.1-8b-instant");
   console.log("테스트 중...\n");
 
-  const { summary, viaGroq } = await summarizeCommitMessages(
-    ["test: GitHub Webhook 연동 테스트\n\nREADME에 Webhook 테스트 문구 추가"],
+  const sampleDiff = `--- README.md (modified) ---
+@@ -1,3 +1,4 @@
+ # WorkMate
++Webhook 테스트: diff 기반 AI 요약
+ `;
+
+  const { summary, viaGroq, usedDiff } = await summarizeCommitMessages(
+    ["123"],
     { 문서: 1 },
+    sampleDiff,
   );
 
   console.log("요약 결과:", summary);
+  console.log("diff 반영:", usedDiff);
   console.log(
     viaGroq
-      ? "\n✅ Groq API 연동 성공 (viaGroq: true)"
+      ? "\n✅ Groq API 연동 성공"
       : "\n⚠️ Groq 미사용 — 키 오류 또는 API 실패. Render Logs에서 [Groq] 메시지 확인.",
   );
 }

@@ -48,7 +48,7 @@ npm start              # 기본 포트 3001
 - `CORS_ORIGIN` — 프로덕션 시 허용 오리진  
 - `PUBLIC_APP_URL` — 채팅·Webhook 링크용 프론트 URL (예: `https://your-app.netlify.app`)  
 - `GITHUB_WEBHOOK_SECRET` — GitHub Webhook 서명 검증 (선택)  
-- `GITHUB_TOKEN` — 저장소 언어 비율 API 동기화 (선택)  
+- `GITHUB_TOKEN` — diff 조회·저장소 언어 API (diff AI 요약에 **권장**)  
 - `GROQ_API_KEY` — 커밋 AI 한 줄 요약 ([Groq Console](https://console.groq.com)에서 발급, 없으면 커밋 메시지 첫 줄 사용)
 - `GROQ_MODEL` — 기본 `llama-3.1-8b-instant`
 
@@ -66,6 +66,5 @@ npm start              # 기본 포트 3001
 1. https://console.groq.com 가입 → **API Keys** → Create API Key  
 2. Render `workmate-api` → **Environment** → `GROQ_API_KEY=gsk_...` 추가 → Save → 재배포  
 3. (로컬 확인) `project-management-backend/.env` 에 동일 키 후 `npm run test-groq`  
-4. GitHub push 후 팀 채팅에 **「AI 요약 (Groq)」** 라벨이 보이면 성공
-
-webhook test3
+4. GitHub push 후 팀 채팅에 **「AI 요약 (Groq · diff 반영)」** 이 보이면 diff+Groq 성공  
+5. diff 조회는 GitHub API 사용 → **`GITHUB_TOKEN` 권장** (없으면 커밋 메시지·스택만으로 요약)
