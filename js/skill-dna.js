@@ -75,17 +75,23 @@ function renderSkillBadges(badges) {
 function renderProfileHeaderBadges(badges, languages) {
   const el = document.getElementById("profileHeaderBadges");
   if (!el) return;
-  const fromBadges = (badges || []).map((b) => b.label || b.id).filter(Boolean);
-  const fromLangs = Object.entries(languages || {})
+
+  const langLabels = Object.entries(languages || {})
+    .filter(([, v]) => Number(v) > 0)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
+    .slice(0, 6)
     .map(([k]) => k);
-  const labels = [...new Set([...fromBadges, ...fromLangs])].slice(0, 8);
-  if (!labels.length) {
+
+  if (!langLabels.length) {
     el.innerHTML = "";
+    el.hidden = true;
     return;
   }
-  el.innerHTML = labels.map((l) => `<span class="skill-dna-badge">${escapeHtml(l)}</span>`).join("");
+
+  el.hidden = false;
+  el.innerHTML = langLabels
+    .map((l) => `<span class="profile-header-badge">${escapeHtml(l)}</span>`)
+    .join("");
 }
 
 async function loadSkillDna(userId) {
