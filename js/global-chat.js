@@ -71,7 +71,10 @@ function ensureGlobalChatDom() {
         <section class="global-chat-main">
           <div id="globalChatMessages" class="global-chat-messages"></div>
           <form id="globalChatForm" class="global-chat-form">
-            <input type="file" id="globalChatFile" class="global-chat-file" title="파일 첨부" />
+            <div class="global-chat-attach-wrap">
+              <input type="file" id="globalChatFile" class="global-chat-file-input" tabindex="-1" aria-hidden="true" />
+              <button type="button" id="globalChatAttachBtn" class="global-chat-attach-btn" aria-label="파일 첨부" title="파일 첨부">+</button>
+            </div>
             <input type="text" id="globalChatInput" class="form-input" placeholder="메시지 입력..." autocomplete="off" />
             <button type="submit" class="btn-primary btn-sm">전송</button>
           </form>
@@ -98,6 +101,12 @@ function ensureGlobalChatDom() {
       e.preventDefault();
       e.stopPropagation();
       toggleGlobalChatMaximize();
+      return;
+    }
+    if (e.target.closest("#globalChatAttachBtn")) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById("globalChatFile")?.click();
     }
   });
 
