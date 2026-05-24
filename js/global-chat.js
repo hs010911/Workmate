@@ -58,12 +58,12 @@ function ensureGlobalChatDom() {
   root.id = "globalChatRoot";
   root.innerHTML = `
     <button type="button" id="globalChatFab" class="global-chat-fab" aria-label="팀 채팅 열기" title="팀 채팅">💬</button>
-    <div id="globalChatPanel" class="global-chat-panel" hidden>
+    <div id="globalChatPanel" class="global-chat-panel" aria-hidden="true">
       <div class="global-chat-header">
         <strong>팀 채팅</strong>
         <div class="global-chat-header-actions">
-          <button type="button" id="globalChatMaximize" class="btn-icon" title="최대화">⛶</button>
-          <button type="button" id="globalChatClose" class="btn-icon" title="닫기">✕</button>
+          <button type="button" id="globalChatMaximize" class="global-chat-icon-btn" title="최대화" aria-label="최대화">⛶</button>
+          <button type="button" id="globalChatClose" class="global-chat-icon-btn" title="닫기" aria-label="닫기">×</button>
         </div>
       </div>
       <div class="global-chat-body">
@@ -81,22 +81,47 @@ function ensureGlobalChatDom() {
   `;
   document.body.appendChild(root);
 
-  document.getElementById("globalChatFab").addEventListener("click", openGlobalChatPanel);
-  document.getElementById("globalChatClose").addEventListener("click", closeGlobalChatPanel);
-  document.getElementById("globalChatMaximize").addEventListener("click", toggleGlobalChatMaximize);
+  root.addEventListener("click", (e) => {
+    if (e.target.closest("#globalChatFab")) {
+      e.preventDefault();
+      e.stopPropagation();
+      openGlobalChatPanel();
+      return;
+    }
+    if (e.target.closest("#globalChatClose")) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeGlobalChatPanel();
+      return;
+    }
+    if (e.target.closest("#globalChatMaximize")) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleGlobalChatMaximize();
+    }
+  });
+
   document.getElementById("globalChatForm").addEventListener("submit", sendGlobalChatMessage);
 }
 
 function openGlobalChatPanel() {
   const panel = document.getElementById("globalChatPanel");
+  const fab = document.getElementById("globalChatFab");
   if (!panel) return;
-  panel.hidden = false;
+  panel.classList.add("is-open");
+  panel.setAttribute("aria-hidden", "false");
+  if (fab) fab.classList.add("is-hidden");
   loadGlobalChatProjects();
 }
 
 function closeGlobalChatPanel() {
   const panel = document.getElementById("globalChatPanel");
-  if (panel) panel.hidden = true;
+  const fab = document.getElementById("globalChatFab");
+  if (panel) {
+    panel.classList.remove("is-open", "global-chat-panel--maximized");
+    panel.setAttribute("aria-hidden", "true");
+  }
+  if (fab) fab.classList.remove("is-hidden");
 }
 
 function toggleGlobalChatMaximize() {
