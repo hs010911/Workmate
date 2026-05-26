@@ -69,4 +69,4 @@ npm start              # 기본 포트 3001
 4. GitHub push 후 팀 채팅에 **「AI 요약 (Groq · diff 반영)」** 이 보이면 diff+Groq 성공  
 5. diff 조회는 GitHub API 사용 → **`GITHUB_TOKEN` 권장** (없으면 커밋 메시지·스택만으로 요약)
 
-diff check2
+20260526 채팅 기능 확인
