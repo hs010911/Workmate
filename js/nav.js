@@ -3,6 +3,7 @@
  * @description sessionStorage 기준 로그인/관리자 링크 노출, 로그아웃 처리.
  */
 document.addEventListener("DOMContentLoaded", () => {
+  document.body.classList.remove("nav-ready")
   setupNavigation()
 })
 
@@ -91,6 +92,8 @@ function setupNavigation() {
       link.classList.remove("disabled-link")
     }
   })
+
+  document.body.classList.add("nav-ready")
 }
 
 function performLogout() {

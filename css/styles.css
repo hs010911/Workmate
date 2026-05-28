@@ -49,6 +49,11 @@ body {
   gap: 2rem;
 }
 
+/* nav.js가 로그인 상태 반영하기 전에는 네비 깜빡임 방지 */
+body:not(.nav-ready) .nav-links {
+  visibility: hidden;
+}
+
 .nav-links a {
   text-decoration: none;
   color: #6b7280;
