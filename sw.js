@@ -1,4 +1,4 @@
-const CACHE = "workgather-pwa-v8";
+const CACHE = "workgather-pwa-v9";
 
 const PRECACHE_URLS = [
   "/index.html",
