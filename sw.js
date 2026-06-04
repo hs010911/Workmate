@@ -1,4 +1,4 @@
-const CACHE = "workmate-pwa-v8";
+const CACHE = "workgather-pwa-v8";
 
 const PRECACHE_URLS = [
   "/index.html",
@@ -60,14 +60,14 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("push", (event) => {
-  let data = { title: "WorkMate", body: "새 알림이 있습니다.", url: "/index.html" };
+  let data = { title: "WorkGather", body: "새 알림이 있습니다.", url: "/index.html" };
   try {
     if (event.data) data = { ...data, ...event.data.json() };
   } catch {
     /* ignore */
   }
   event.waitUntil(
-    self.registration.showNotification(data.title || "WorkMate", {
+    self.registration.showNotification(data.title || "WorkGather", {
       body: data.body || "",
       icon: "/icons/icon-192.png",
       badge: "/icons/icon-192.png",

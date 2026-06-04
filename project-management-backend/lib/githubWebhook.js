@@ -143,7 +143,7 @@ async function processGithubActivity({
     User,
     user?._id,
     {
-      title: "WorkMate — GitHub 업데이트",
+      title: "WorkGather — GitHub 업데이트",
       body: summary || body,
       url: chatUrl,
       projectId: String(project._id),

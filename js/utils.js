@@ -1,5 +1,5 @@
 /**
- * @fileoverview WorkMate 공통 유틸리티
+ * @fileoverview WorkGather 공통 유틸리티
  * @description 날짜 포맷, 프로젝트/지원 상태 문구, DOM, 로그인 상태,
  *              모달(showModal/showConfirm/showPrompt), 에러 표시
  * @depends 전역: document, localStorage, sessionStorage

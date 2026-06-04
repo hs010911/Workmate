@@ -17,7 +17,7 @@ function isPushConfigured() {
 function configureVapid() {
   if (!webpush || !isPushConfigured()) return false;
   webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT || "mailto:support@workmate.local",
+    process.env.VAPID_SUBJECT || "mailto:support@workgather.local",
     process.env.VAPID_PUBLIC_KEY,
     process.env.VAPID_PRIVATE_KEY,
   );

@@ -13,7 +13,7 @@
   const port = 3001;
 
   /** Netlify 등 정적 호스팅: API는 Render 서브도메인 */
-  const RENDER_API_BASE = "https://workmate-api.onrender.com";
+  const RENDER_API_BASE = "https://workgather-api.onrender.com";
   if (hostname.endsWith(".netlify.app")) {
     window.apiBase = RENDER_API_BASE;
     return;

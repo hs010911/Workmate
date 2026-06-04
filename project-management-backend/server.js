@@ -1,5 +1,5 @@
 /**
- * @fileoverview WorkMate API 서버 (Express + Mongoose)
+ * @fileoverview WorkGather API 서버 (Express + Mongoose)
  * 사용자/관리자/공개 API 라우트를 한 파일에 정의(모델은 models/ 사용).
  */
 

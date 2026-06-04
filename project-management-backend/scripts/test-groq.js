@@ -16,7 +16,7 @@ async function main() {
 
   const sampleDiff = `--- README.md (modified) ---
 @@ -1,3 +1,4 @@
- # WorkMate
+ # WorkGather
 +Webhook 테스트: diff 기반 AI 요약
  `;
 

@@ -9,7 +9,7 @@ const BINARY_OR_SKIP = /\.(png|jpg|jpeg|gif|webp|ico|pdf|zip|lock|woff2?|ttf|eot
 function githubHeaders() {
   const headers = {
     Accept: "application/vnd.github+json",
-    "User-Agent": "WorkMate",
+    "User-Agent": "WorkGather",
     "X-GitHub-Api-Version": "2022-11-28",
   };
   if (process.env.GITHUB_TOKEN) {

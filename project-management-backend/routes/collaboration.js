@@ -110,7 +110,7 @@ function registerCollaborationRoutes(app, io, { User, auth }) {
         await syncUserLanguagesFromRepo(user, repo);
       } else if (user.githubUsername) {
         try {
-          const headers = { Accept: "application/vnd.github+json", "User-Agent": "WorkMate" };
+          const headers = { Accept: "application/vnd.github+json", "User-Agent": "WorkGather" };
           if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
           const r = await fetch(`https://api.github.com/users/${user.githubUsername}/repos?per_page=1&sort=updated`, {
             headers,

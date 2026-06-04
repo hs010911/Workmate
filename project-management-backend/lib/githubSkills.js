@@ -163,7 +163,7 @@ async function recomputeBadges(userDoc, projectId, projectTitle, User) {
 
 async function fetchRepoLanguages(_githubUsername, repoFullName, token) {
   if (!repoFullName || !repoFullName.includes("/")) return {};
-  const headers = { Accept: "application/vnd.github+json", "User-Agent": "WorkMate" };
+  const headers = { Accept: "application/vnd.github+json", "User-Agent": "WorkGather" };
   if (token) headers.Authorization = `Bearer ${token}`;
   const url = `https://api.github.com/repos/${repoFullName}/languages`;
   const res = await fetch(url, { headers });

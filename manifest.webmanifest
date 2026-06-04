@@ -1,6 +1,6 @@
 {
-  "name": "WorkMate",
-  "short_name": "WorkMate",
+  "name": "WorkGather",
+  "short_name": "WorkGather",
   "description": "프로젝트 매칭 플랫폼",
   "start_url": "/index.html",
   "scope": "/",
