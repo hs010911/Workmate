@@ -64,7 +64,7 @@ npm start              # 기본 포트 3001
 ### Groq API 설정 (AI 요약)
 
 1. https://console.groq.com 가입 → **API Keys** → Create API Key  
-2. Render `workgather-api` → **Environment** → `GROQ_API_KEY=gsk_...` 추가 → Save → 재배포  
+2. Render `workmate-api` → **Environment** → `GROQ_API_KEY=gsk_...` 추가 → Save → 재배포  
 3. (로컬 확인) `project-management-backend/.env` 에 동일 키 후 `npm run test-groq`  
 4. GitHub push 후 팀 채팅에 **「AI 요약 (Groq · diff 반영)」** 이 보이면 diff+Groq 성공  
 5. diff 조회는 GitHub API 사용 → **`GITHUB_TOKEN` 권장** (없으면 커밋 메시지·스택만으로 요약)
