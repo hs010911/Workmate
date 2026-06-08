@@ -34,3 +34,5 @@ npm start
 - `PORT`: API 포트 (기본 3001)
 - `GROQ_API_KEY`: AI 요약용 Groq API 키 (선택)
 
+
+20260608 팀 채팅 테스트
