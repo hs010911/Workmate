@@ -145,10 +145,35 @@ async function deleteAccount() {
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
-    const user = getCurrentUser();
-    if (!user || !user.id) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetUserId = urlParams.get("id");
+    const currentUser = getCurrentUser();
+
+    if (!currentUser || !currentUser.id) {
         window.location.href = "login.html";
         return;
+    }
+
+    let profileUser = currentUser;
+
+    // 다른 사용자의 프로필을 보는 경우
+    if (targetUserId && targetUserId !== currentUser.id) {
+        try {
+            const data = await apiGet(`/api/users/${targetUserId}`);
+            if (data.user) {
+                profileUser = data.user;
+            } else {
+                showModal("오류", "사용자를 찾을 수 없습니다.", () => {
+                    window.location.href = "profile.html";
+                });
+                return;
+            }
+        } catch (error) {
+            showModal("오류", "사용자 정보를 불러올 수 없습니다.", () => {
+                window.location.href = "profile.html";
+            });
+            return;
+        }
     }
 
     const profileName = document.getElementById("profileName");
@@ -159,23 +184,32 @@ document.addEventListener("DOMContentLoaded", async function () {
     const emailInput = document.getElementById("email");
     const phoneInput = document.getElementById("phone");
 
-    if (user.nickname) {
-        if (profileName) profileName.textContent = user.nickname;
-        if (nicknameInput) nicknameInput.value = user.nickname;
+    // 다른 사용자 프로필인 경우 수정 기능 숨김
+    const isOwnProfile = !targetUserId || targetUserId === currentUser.id;
+    if (!isOwnProfile) {
+        const settingsTab = document.querySelector('button[onclick*="settings"]');
+        if (settingsTab) settingsTab.style.display = "none";
+        const settingsContent = document.getElementById("settings");
+        if (settingsContent) settingsContent.style.display = "none";
+    }
+
+    if (profileUser.nickname) {
+        if (profileName) profileName.textContent = profileUser.nickname;
+        if (nicknameInput) nicknameInput.value = profileUser.nickname;
         if (profileAvatar) {
-            profileAvatar.textContent = user.nickname.charAt(0).toUpperCase();
+            profileAvatar.textContent = profileUser.nickname.charAt(0).toUpperCase();
         }
     }
 
-    if (user.email) {
-        if (profileEmail) profileEmail.textContent = user.email;
-        if (emailInput) emailInput.value = user.email;
+    if (profileUser.email) {
+        if (profileEmail) profileEmail.textContent = profileUser.email;
+        if (emailInput) emailInput.value = profileUser.email;
     }
 
     // 테스트 모드에서는 휴대폰을 임의 입력하지 않는 것을 목표로 함.
     // 서버에 값이 없거나 더미 값이면 "-"로 표시합니다.
     if (phoneInput) {
-        const rawPhone = user.phone || "";
+        const rawPhone = profileUser.phone || "";
         const trimmedPhone = String(rawPhone).trim();
         const DUMMY_PHONES = new Set([
             "000-0000-0000",
@@ -192,8 +226,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    if (user.createdAt) {
-        const joinDate = new Date(user.createdAt);
+    if (profileUser.createdAt) {
+        const joinDate = new Date(profileUser.createdAt);
         const joinDateStr = `${joinDate.getFullYear()}년 ${joinDate.getMonth() + 1}월`;
         if (profileMeta) {
             profileMeta.textContent = `가입일: ${joinDateStr}`;
@@ -202,25 +236,28 @@ document.addEventListener("DOMContentLoaded", async function () {
         profileMeta.textContent = "";
     }
 
-    try {
-        const data = await apiGet("/api/dashboard/stats");
-        if (data.success) {
-            const registeredProjectsEl = document.getElementById("registeredProjects");
-            const participatedProjectsEl = document.getElementById("participatedProjects");
-            const completedProjectsEl = document.getElementById("completedProjects");
+    // 자신의 프로필인 경우에만 통계 및 차단 목록 로드
+    if (isOwnProfile) {
+        try {
+            const data = await apiGet("/api/dashboard/stats");
+            if (data.success) {
+                const registeredProjectsEl = document.getElementById("registeredProjects");
+                const participatedProjectsEl = document.getElementById("participatedProjects");
+                const completedProjectsEl = document.getElementById("completedProjects");
 
-            if (registeredProjectsEl) registeredProjectsEl.textContent = data.stats.myPosts || 0;
-            if (participatedProjectsEl) participatedProjectsEl.textContent = data.stats.activeProjects || 0;
-            if (completedProjectsEl) completedProjectsEl.textContent = data.stats.completedProjects || 0;
+                if (registeredProjectsEl) registeredProjectsEl.textContent = data.stats.myPosts || 0;
+                if (participatedProjectsEl) participatedProjectsEl.textContent = data.stats.activeProjects || 0;
+                if (completedProjectsEl) completedProjectsEl.textContent = data.stats.completedProjects || 0;
+            }
+        } catch (error) {
+            // 통계 로드 실패 시 무시
         }
-    } catch (error) {
-        // 통계 로드 실패 시 무시
+
+        await loadBlockedUsers();
     }
 
-    await loadBlockedUsers();
-
     if (typeof loadSkillDna === "function") {
-        await loadSkillDna(user.id);
+        await loadSkillDna(profileUser.id);
     }
 });
 

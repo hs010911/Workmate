@@ -1140,6 +1140,28 @@ app.delete("/api/users/:id/block", auth, async (req, res) => {
   }
 });
 
+/**
+ * 사용자 정보 조회
+ * @route GET /api/users/:id
+ * @requires auth
+ * @param {string} id - 조회할 사용자 ID
+ */
+app.get("/api/users/:id", auth, async (req, res) => {
+  try {
+    const targetId = req.params.id;
+    const user = await User.findById(targetId).select("nickname username name email phone createdAt githubUsername githubSyncRepo");
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: "사용자를 찾을 수 없습니다" });
+    }
+
+    res.json({ success: true, user });
+  } catch (e) {
+    console.error("사용자 정보 조회 오류:", e);
+    res.status(500).json({ success: false, message: "서버 오류" });
+  }
+});
+
 // ==================== 작업 관리 API ====================
 
 /**
