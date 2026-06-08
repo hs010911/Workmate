@@ -571,9 +571,7 @@ function renderApplicantsTable() {
                 actionButtons = '<span style="color: #ef4444; font-weight: 500;">거절됨</span>';
             }
 
-            const nicknameCell = currentProject.status === "recruiting"
-                ? "<a href=\"" + profileLink + "\" class=\"nickname-link\">" + nickname + "</a>"
-                : nickname;
+            const nicknameCell = "<a href=\"" + profileLink + "\" class=\"nickname-link\">" + nickname + "</a>";
             return `
                 <tr>
                     <td>${no}</td>
