@@ -247,7 +247,7 @@ function renderProjectDetail(project) {
             statusButton = `<button class="btn-secondary" onclick="changeProjectStatus('completed')">프로젝트 완료</button>`;
         }
         
-            const canDelete = project.status === "recruiting";
+            const canDelete = project.status === "recruiting" || project.status === "completed";
             const deleteButton = canDelete ? `<button class="btn-danger" onclick="deleteProject()">삭제</button>` : "";
         actionsContainer.innerHTML = `
             <button class="btn-secondary" onclick="editProject()">프로젝트 수정</button>
